@@ -1,0 +1,25 @@
+:root {
+    --first: #e6005c;
+    --second: #b30047;
+}
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+ul li{
+    padding: 0 15px;
+    cursor: pointer;
+}
+ul li:hover{
+    color: var(--first);
+}
+
+@media screen and (max-width: 800px) {
+    ul li:hover {
+        color: white;
+    }
+    li {
+        color: white;
+    }
+}

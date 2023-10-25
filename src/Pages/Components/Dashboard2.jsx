@@ -1,0 +1,239 @@
+// src/components/DashboardLayout.js
+import { useContext, useEffect, useState } from 'react'
+import { Box, Flex, VStack } from '@chakra-ui/react'
+import ProfilePage from '../ProfilePage'
+import AllAlumniRequestsPage from '../AllAlumniRequestsPage'
+import PostPage from '../PostPage'
+import AlumniList from '../AlumniList'
+import { UserContext } from '../../UserContext'
+import {
+  FaBorderAll,
+  FaHome,
+  FaListAlt,
+  FaUserAlt,
+  FaUsers,
+} from 'react-icons/fa'
+import { BsSendFill } from 'react-icons/bs'
+import RequestPage from '../RequestPage'
+import SingleUserRequestPage from '../SingleUserRequestPage'
+import DashboardPage from '../DashboardPage'
+
+function Dashboard2() {
+  const [selectedComponent, setSelectedComponent] = useState('Dashboard')
+  const { user } = useContext(UserContext)
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = `${
+      user.type === 'admin'
+        ? 'Admin'
+        : user.type === 'alumni'
+        ? 'Alumni'
+        : 'User'
+    } Dashboard`
+  }, [user.type])
+
+  const isActive = (componentName) => componentName === selectedComponent
+
+  return (
+    <Flex mt={5} mx={'auto'}>
+      <Box
+        w='280px'
+        className=' bg-slate-50 max-md:hidden dark:bg-slate-800 rounded-lg'
+        p='5'
+        zIndex={5}
+        position='fixed'
+      >
+        <VStack spacing='4'>
+          <button
+            className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+              isActive('Dashboard') &&
+              'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+            }`}
+            onClick={() => setSelectedComponent('Dashboard')}
+          >
+            <div className='flex gap-3'>
+              <FaHome size={20} />
+              Dashboard
+            </div>
+          </button>
+          {user.type != 'user' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('Profile') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('Profile')}
+            >
+              <div className='flex gap-3'>
+                <FaUserAlt size={20} />
+                Profile
+              </div>
+            </button>
+          )}
+          {user.type === 'admin' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('AlumniRequest') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('AlumniRequest')}
+            >
+              <div className='flex gap-3'>
+                <FaUsers size={20} />
+                Alumni Requests
+              </div>
+            </button>
+          )}
+          {user.type != 'user' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('Posts') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('Posts')}
+            >
+              <div className='flex gap-3'>
+                <FaBorderAll size={20} />
+                Posts
+              </div>
+            </button>
+          )}
+          {user.type != 'admin' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('MakeARequest') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('MakeARequest')}
+            >
+              <div className='flex gap-3'>
+                <BsSendFill size={20} />
+                Make A Request
+              </div>
+            </button>
+          )}
+          {user.type != 'admin' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('PreviousRequest') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('PreviousRequest')}
+            >
+              <div className='flex gap-3'>
+                <BsSendFill size={20} />
+                Previous Request
+              </div>
+            </button>
+          )}
+          {user.type === 'admin' && (
+            <button
+              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
+                isActive('AlumniList') &&
+                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              }`}
+              onClick={() => setSelectedComponent('AlumniList')}
+            >
+              <div className='flex gap-3'>
+                <FaListAlt size={20} />
+                Alumni List
+              </div>
+            </button>
+          )}
+        </VStack>
+      </Box>
+
+      <Box flex='1' className='lg:ml-[260px] lg:pl-14 mb-7' overflowY='auto'>
+        {selectedComponent === 'Dashboard' && <DashboardPage user={user} />}
+        {selectedComponent === 'Profile' && <ProfilePage userDeials={user} />}
+        {selectedComponent === 'AlumniRequest' && <AllAlumniRequestsPage />}
+        {selectedComponent === 'Posts' && <PostPage />}
+        {selectedComponent === 'MakeARequest' && <RequestPage user={user} />}
+        {selectedComponent === 'PreviousRequest' && <SingleUserRequestPage />}
+        {selectedComponent === 'AlumniList' && <AlumniList />}
+      </Box>
+      <div className='lg:hidden max-md:border-t border-slate-900 dark:border-slate-500 dark:bg-slate-950 bg-slate-300 py-3 rounded-t-2xl z-40 fixed bottom-0 flex justify-evenly w-[100%]'>
+        <div
+          onClick={() => setSelectedComponent('Dashboard')}
+          className={`${
+            isActive('Dashboard') && 'text-primary'
+          } flex flex-col justify-center items-center gap-y-1`}
+        >
+          <FaHome size={30} />
+          <p className='text-xs'>Home</p>
+        </div>
+        {user.type != 'user' && (
+          <div
+            onClick={() => setSelectedComponent('Profile')}
+            className={`${
+              isActive('Profile') && 'text-primary'
+            } flex flex-col justify-center items-center gap-y-1`}
+          >
+            <FaUserAlt size={26} />
+            <p className='text-xs'>Profile</p>
+          </div>
+        )}
+        {user.type === 'admin' && (
+          <div
+            onClick={() => setSelectedComponent('AlumniRequest')}
+            className={`${
+              isActive('AlumniRequest') && 'text-primary'
+            } flex flex-col justify-center items-center`}
+          >
+            <FaUsers size={31} />
+            <p className='text-xs'>Requests</p>
+          </div>
+        )}
+        {user.type != 'user' && (
+          <div
+            onClick={() => setSelectedComponent('Posts')}
+            className={`${
+              isActive('Posts') && 'text-primary'
+            } flex flex-col justify-center items-center gap-y-1`}
+          >
+            <FaBorderAll size={30} />
+            <p className='text-xs'>Posts</p>
+          </div>
+        )}
+        {user.type != 'admin' && (
+          <div
+            onClick={() => setSelectedComponent('MakeARequest')}
+            className={`${
+              isActive('MakeARequest') && 'text-primary'
+            } flex flex-col justify-center items-center gap-y-1`}
+          >
+            <BsSendFill size={30} />
+            <p className='text-xs'>Requests</p>
+          </div>
+        )}
+        {user.type != 'admin' && (
+          <div
+            onClick={() => setSelectedComponent('PreviousRequest')}
+            className={`${
+              isActive('PreviousRequest') && 'text-primary'
+            } flex flex-col justify-center items-center gap-y-1`}
+          >
+            <BsSendFill size={30} />
+            <p className='text-xs'>Requests</p>
+          </div>
+        )}
+        {user.type === 'admin' && (
+          <div
+            onClick={() => setSelectedComponent('AlumniList')}
+            className={`${
+              isActive('AlumniList') && 'text-primary'
+            } flex flex-col justify-center items-center gap-y-1`}
+          >
+            <FaListAlt size={30} />
+            <p className='text-xs'>Alumnies</p>
+          </div>
+        )}
+      </div>
+    </Flex>
+  )
+}
+
+export default Dashboard2
