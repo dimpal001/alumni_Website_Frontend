@@ -1,20 +1,28 @@
 import { Center, IconButton, useToast } from '@chakra-ui/react'
 import Image from '../assets/dashboard.svg'
-import { HiSearchCircle } from 'react-icons/hi'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { brandColor } from './Components/CustomDesign'
 import { MdShareLocation, MdWork } from 'react-icons/md'
 import Male from '../assets/male.svg'
 import Female from '../assets/female.svg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Loading from './Components/Loading'
+import { BiSearchAlt } from 'react-icons/bi'
 const DashboardPage = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFirstTime, setIsFirstTime] = useState(false)
   const toast = useToast()
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = 'Dashboard'
+  }, [])
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -35,7 +43,7 @@ const DashboardPage = ({ user }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     try {
       const response = await axios.get(
-        `http://192.168.1.15:3000/api/search?name=${searchQuery}`,
+        `http://localhost:3000/api/search?name=${searchQuery}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -52,10 +60,7 @@ const DashboardPage = ({ user }) => {
   return (
     <>
       {user.type === 'user' && (
-        <Center
-          flexDir={'column'}
-          className='mt-5 min-h-[700px] lg:min-h-[500]'
-        >
+        <Center flexDir={'column'} className=' min-h-[700px] lg:min-h-[500]'>
           <div>
             <div>
               <p className='text-center text-3xl font-bold pb-10'>
@@ -84,7 +89,7 @@ const DashboardPage = ({ user }) => {
                 </p>
                 <div>
                   <div className='flex border border-slate-400 p-2 rounded-lg items-center'>
-                    <HiSearchCircle size={30} />
+                    <BiSearchAlt size={30} />
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -116,6 +121,10 @@ const DashboardPage = ({ user }) => {
                           gender={alumni.gender}
                           worksAt={alumni.otherInfo.worksAt}
                           address={alumni.otherInfo.address}
+                          click={(e) => {
+                            e.preventDefault()
+                            alert('Hi')
+                          }}
                         />
                       </div>
                     ))}

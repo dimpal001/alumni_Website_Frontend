@@ -1,14 +1,13 @@
 import '../App.css'
 import Image1 from '../assets/svg2.svg'
 import { CButton1 } from './Components/CustomDesign'
-import { TbLogin2 } from 'react-icons/tb'
-import { FiUserPlus } from 'react-icons/fi'
 import LoginModal from './Components/LoginModal'
 import SignUpModal from './Components/SignUpModal'
 import { useEffect, useState } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { Box } from '@chakra-ui/react'
+import { BiLogInCircle, BiUserCircle } from 'react-icons/bi'
 const Home = () => {
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [isLoginOpen, setIsLoginOpen] = useState(false)
@@ -49,12 +48,12 @@ const Home = () => {
                   <div className='flex gap-5 justify-center lg:gap-10 mt-5'>
                     <CButton1
                       onClick={openSignupModal}
-                      rightIcon={<FiUserPlus size={20} />}
+                      rightIcon={<BiUserCircle size={25} />}
                       title={'Sing Up'}
                     />
                     <CButton1
                       onClick={openLoginModal}
-                      rightIcon={<TbLogin2 size={25} />}
+                      rightIcon={<BiLogInCircle size={25} />}
                       title={'Login'}
                     />
                   </div>

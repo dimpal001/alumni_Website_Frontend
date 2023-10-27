@@ -1,4 +1,3 @@
-// src/components/DashboardLayout.js
 import { useContext, useEffect, useState } from 'react'
 import { Box, Flex, VStack } from '@chakra-ui/react'
 import ProfilePage from '../ProfilePage'
@@ -14,11 +13,11 @@ import {
   FaUsers,
 } from 'react-icons/fa'
 import { BsSendFill } from 'react-icons/bs'
-import RequestPage from '../RequestPage'
-import SingleUserRequestPage from '../SingleUserRequestPage'
+import { FiGrid, FiHome, FiList, FiUser, FiUsers } from 'react-icons/fi'
 import DashboardPage from '../DashboardPage'
+import UserRequestPage from '../UserRequestPage'
 
-function Dashboard2() {
+const Dashboard = () => {
   const [selectedComponent, setSelectedComponent] = useState('Dashboard')
   const { user } = useContext(UserContext)
   useEffect(() => {
@@ -49,8 +48,7 @@ function Dashboard2() {
         <VStack spacing='4'>
           <button
             className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-              isActive('Dashboard') &&
-              'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+              isActive('Dashboard') && ' bg-primary text-white'
             }`}
             onClick={() => setSelectedComponent('Dashboard')}
           >
@@ -62,8 +60,7 @@ function Dashboard2() {
           {user.type != 'user' && (
             <button
               className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('Profile') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+                isActive('Profile') && 'bg-primary text-white'
               }`}
               onClick={() => setSelectedComponent('Profile')}
             >
@@ -76,8 +73,7 @@ function Dashboard2() {
           {user.type === 'admin' && (
             <button
               className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('AlumniRequest') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+                isActive('AlumniRequest') && 'bg-primary text-white'
               }`}
               onClick={() => setSelectedComponent('AlumniRequest')}
             >
@@ -90,8 +86,7 @@ function Dashboard2() {
           {user.type != 'user' && (
             <button
               className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('Posts') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+                isActive('Posts') && 'bg-primary text-white'
               }`}
               onClick={() => setSelectedComponent('Posts')}
             >
@@ -104,22 +99,7 @@ function Dashboard2() {
           {user.type != 'admin' && (
             <button
               className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('MakeARequest') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
-              }`}
-              onClick={() => setSelectedComponent('MakeARequest')}
-            >
-              <div className='flex gap-3'>
-                <BsSendFill size={20} />
-                Make A Request
-              </div>
-            </button>
-          )}
-          {user.type != 'admin' && (
-            <button
-              className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('PreviousRequest') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+                isActive('PreviousRequest') && 'bg-primary text-white'
               }`}
               onClick={() => setSelectedComponent('PreviousRequest')}
             >
@@ -132,8 +112,7 @@ function Dashboard2() {
           {user.type === 'admin' && (
             <button
               className={`w-[100%] rounded-lg dark:border-slate-800 border-slate-400  py-2 font-bold text-left px-5 ${
-                isActive('AlumniList') &&
-                'dark:bg-slate-900 bg-slate-200 dark:text-white text-slate-900'
+                isActive('AlumniList') && 'bg-primary text-white'
               }`}
               onClick={() => setSelectedComponent('AlumniList')}
             >
@@ -151,18 +130,18 @@ function Dashboard2() {
         {selectedComponent === 'Profile' && <ProfilePage userDeials={user} />}
         {selectedComponent === 'AlumniRequest' && <AllAlumniRequestsPage />}
         {selectedComponent === 'Posts' && <PostPage />}
-        {selectedComponent === 'MakeARequest' && <RequestPage user={user} />}
-        {selectedComponent === 'PreviousRequest' && <SingleUserRequestPage />}
+        {selectedComponent === 'PreviousRequest' && <UserRequestPage />}
         {selectedComponent === 'AlumniList' && <AlumniList />}
       </Box>
-      <div className='lg:hidden max-md:border-t border-slate-900 dark:border-slate-500 dark:bg-slate-950 bg-slate-300 py-3 rounded-t-2xl z-40 fixed bottom-0 flex justify-evenly w-[100%]'>
+
+      <div className='lg:hidden m-[2%] border-slate-900 dark:border-slate-500 dark:bg-slate-950 bg-slate-300 py-2 rounded-2xl z-40 fixed bottom-0 flex justify-evenly w-[96%]'>
         <div
           onClick={() => setSelectedComponent('Dashboard')}
           className={`${
             isActive('Dashboard') && 'text-primary'
           } flex flex-col justify-center items-center gap-y-1`}
         >
-          <FaHome size={30} />
+          <FiHome size={22} />
           <p className='text-xs'>Home</p>
         </div>
         {user.type != 'user' && (
@@ -172,7 +151,7 @@ function Dashboard2() {
               isActive('Profile') && 'text-primary'
             } flex flex-col justify-center items-center gap-y-1`}
           >
-            <FaUserAlt size={26} />
+            <FiUser size={22} />
             <p className='text-xs'>Profile</p>
           </div>
         )}
@@ -183,7 +162,7 @@ function Dashboard2() {
               isActive('AlumniRequest') && 'text-primary'
             } flex flex-col justify-center items-center`}
           >
-            <FaUsers size={31} />
+            <FiUsers size={24} />
             <p className='text-xs'>Requests</p>
           </div>
         )}
@@ -194,19 +173,8 @@ function Dashboard2() {
               isActive('Posts') && 'text-primary'
             } flex flex-col justify-center items-center gap-y-1`}
           >
-            <FaBorderAll size={30} />
+            <FiGrid size={22} />
             <p className='text-xs'>Posts</p>
-          </div>
-        )}
-        {user.type != 'admin' && (
-          <div
-            onClick={() => setSelectedComponent('MakeARequest')}
-            className={`${
-              isActive('MakeARequest') && 'text-primary'
-            } flex flex-col justify-center items-center gap-y-1`}
-          >
-            <BsSendFill size={30} />
-            <p className='text-xs'>Requests</p>
           </div>
         )}
         {user.type != 'admin' && (
@@ -216,7 +184,7 @@ function Dashboard2() {
               isActive('PreviousRequest') && 'text-primary'
             } flex flex-col justify-center items-center gap-y-1`}
           >
-            <BsSendFill size={30} />
+            <BsSendFill size={22} />
             <p className='text-xs'>Requests</p>
           </div>
         )}
@@ -227,7 +195,7 @@ function Dashboard2() {
               isActive('AlumniList') && 'text-primary'
             } flex flex-col justify-center items-center gap-y-1`}
           >
-            <FaListAlt size={30} />
+            <FiList size={22} />
             <p className='text-xs'>Alumnies</p>
           </div>
         )}
@@ -236,4 +204,4 @@ function Dashboard2() {
   )
 }
 
-export default Dashboard2
+export default Dashboard

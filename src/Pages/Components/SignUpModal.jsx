@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Select,
@@ -16,10 +15,10 @@ import {
 } from '@chakra-ui/react'
 import { CButton1, IconInput, brandColor } from './CustomDesign'
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi'
-import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { MdLockPerson, MdMarkEmailRead, MdPhone } from 'react-icons/md'
 import { useState } from 'react'
 import axios from 'axios'
+import { BiUserCircle } from 'react-icons/bi'
 
 const SignUpModal = ({ open, onClose }) => {
   const toast = useToast()
@@ -50,7 +49,8 @@ const SignUpModal = ({ open, onClose }) => {
     setIsPassword(!isPassword)
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     const { name, email, phone, gender, password } = formData
 
     if (
@@ -109,7 +109,7 @@ const SignUpModal = ({ open, onClose }) => {
     try {
       setIsLoading(true)
       const response = await axios.post(
-        'http://192.168.1.15:3000/api/auth/signup',
+        'http://localhost:3000/api/auth/signup',
         {
           name: name,
           email: email,
@@ -122,11 +122,11 @@ const SignUpModal = ({ open, onClose }) => {
       console.log(response.data)
       setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       if (
         error.response &&
         error.response.data.message === 'Email is already registered.'
       ) {
-        setIsLoading(false)
         toast({
           title: 'Email Id is already registered !',
           description: 'Password must be at least 8 characters.',
@@ -137,7 +137,6 @@ const SignUpModal = ({ open, onClose }) => {
         })
         return
       } else {
-        setIsLoading(false)
         toast({
           title: 'Registration Failed! Try again later!',
           status: 'error',
@@ -154,75 +153,94 @@ const SignUpModal = ({ open, onClose }) => {
       <Modal isOpen={open} onClose={onClose}>
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-800' mx={3}>
-          <ModalHeader color={brandColor.first}>Sign Up</ModalHeader>
-          <Divider mb={3} />
+          {!isSubmited && (
+            <div>
+              <ModalHeader color={brandColor.first}>Sign Up</ModalHeader>
+              <Divider mb={3} />
+            </div>
+          )}
           <ModalCloseButton color={brandColor.first} />
           {!isSubmited ? (
             <ModalBody>
-              <IconInput
-                name={'name'}
-                onChange={handleInputChange}
-                icon={<FiUser color={brandColor.first} size={22} />}
-                placeholder={'Full name'}
-              />
-              <IconInput
-                name={'email'}
-                onChange={handleInputChange}
-                icon={<MdMarkEmailRead color={brandColor.first} size={22} />}
-                placeholder={'Email address'}
-              />
-              <IconInput
-                name={'phone'}
-                onChange={handleInputChange}
-                icon={<MdPhone color={brandColor.first} size={22} />}
-                placeholder={'Phone number'}
-              />
-              <Select
-                name='gender'
-                className='bg-slate-200 dark:bg-slate-900 '
-                onChange={handleInputChange}
-                color={brandColor.first}
-                fontWeight={'bold'}
-              >
-                <option value=''>Select a Gender</option>
-                <option value='male'>Male</option>
-                <option value='female'>Female</option>
-                <option value='other'>Other</option>
-              </Select>
-              <InputGroup
-                className='bg-slate-200 rounded-lg dark:bg-slate-900'
-                mt={4}
-              >
-                <InputLeftElement pointerEvents={'none'}>
-                  <MdLockPerson size={22} color={brandColor.first} />
-                </InputLeftElement>
-                <Input
-                  name={'password'}
+              <form>
+                <IconInput
+                  name={'name'}
+                  onChange={handleInputChange}
+                  icon={<FiUser color={brandColor.first} size={22} />}
+                  placeholder={'Full name'}
+                />
+                <IconInput
+                  name={'email'}
+                  onChange={handleInputChange}
+                  icon={<MdMarkEmailRead color={brandColor.first} size={22} />}
+                  placeholder={'Email address'}
+                />
+                <IconInput
+                  name={'phone'}
+                  onChange={handleInputChange}
+                  icon={<MdPhone color={brandColor.first} size={22} />}
+                  placeholder={'Phone number'}
+                />
+                <Select
+                  name='gender'
+                  className='bg-slate-200 dark:bg-slate-900 '
                   onChange={handleInputChange}
                   color={brandColor.first}
                   fontWeight={'bold'}
-                  fontFamily={'arial'}
-                  type={isPassword ? 'password' : 'text'}
-                  placeholder='New password'
-                />
-                <InputRightElement>
-                  {isPassword ? (
-                    <FiEye
-                      size={18}
-                      onClick={toggleType}
-                      cursor={'pointer'}
-                      color={brandColor.first}
+                >
+                  <option value=''>Select a Gender</option>
+                  <option value='male'>Male</option>
+                  <option value='female'>Female</option>
+                  <option value='other'>Other</option>
+                </Select>
+                <InputGroup
+                  className='bg-slate-200 rounded-lg dark:bg-slate-900'
+                  mt={4}
+                >
+                  <InputLeftElement pointerEvents={'none'}>
+                    <MdLockPerson size={22} color={brandColor.first} />
+                  </InputLeftElement>
+                  <Input
+                    name={'password'}
+                    onChange={handleInputChange}
+                    color={brandColor.first}
+                    fontWeight={'bold'}
+                    fontFamily={'arial'}
+                    type={isPassword ? 'password' : 'text'}
+                    placeholder='New password'
+                  />
+                  <InputRightElement>
+                    {isPassword ? (
+                      <FiEye
+                        size={18}
+                        onClick={toggleType}
+                        cursor={'pointer'}
+                        color={brandColor.first}
+                      />
+                    ) : (
+                      <FiEyeOff
+                        size={18}
+                        onClick={toggleType}
+                        cursor={'pointer'}
+                        color={brandColor.first}
+                      />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+                {!isSubmited && (
+                  <div className='mt-4 mb-7'>
+                    <CButton1
+                      type={'submit'}
+                      width={'100%'}
+                      title={'Signup'}
+                      onClick={handleSubmit}
+                      isLoading={isLoading}
+                      loadingText={'Submitting...'}
+                      rightIcon={<BiUserCircle size={25} />}
                     />
-                  ) : (
-                    <FiEyeOff
-                      size={18}
-                      onClick={toggleType}
-                      cursor={'pointer'}
-                      color={brandColor.first}
-                    />
-                  )}
-                </InputRightElement>
-              </InputGroup>
+                  </div>
+                )}
+              </form>
             </ModalBody>
           ) : (
             <ModalBody>
@@ -233,18 +251,6 @@ const SignUpModal = ({ open, onClose }) => {
                 Registration Successfull
               </p>
             </ModalBody>
-          )}
-          {!isSubmited && (
-            <ModalFooter mt={-2} mb={4}>
-              <CButton1
-                width={'100%'}
-                title={'Signup'}
-                onClick={handleSubmit}
-                isLoading={isLoading}
-                loadingText={'Submitting...'}
-                rightIcon={<ArrowForwardIcon />}
-              />
-            </ModalFooter>
           )}
         </ModalContent>
       </Modal>

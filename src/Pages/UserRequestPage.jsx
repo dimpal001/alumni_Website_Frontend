@@ -5,19 +5,28 @@ import Empty from '../assets/null.png'
 import { useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../UserContext'
+import MakeRequestModal from './Components/MakeRequestModal'
+import { CButton1 } from './Components/CustomDesign'
 
-const SingleUserRequestPage = () => {
+const UserRequestPage = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const { setUser } = useContext(UserContext)
   const [requests, setRequest] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleOpen = () => {
+    setIsModalOpen(true)
+  }
+
   const fetchData = () => {
     setIsLoading(true)
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     axios
-      .get('http://192.168.1.15:3000/api/alumni-request/my-alumni-requests', {
+      .get('http://localhost:3000/api/alumni-request/my-alumni-requests', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -51,6 +60,11 @@ const SingleUserRequestPage = () => {
 
   useEffect(() => {
     fetchData()
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = 'Requests'
   }, [])
 
   return (
@@ -58,8 +72,15 @@ const SingleUserRequestPage = () => {
       {isLoading ? (
         <Loading title={'Fetching data...'} />
       ) : (
-        <div className='bg-slate-50 rounded-lg py-5 dark:bg-slate-800'>
-          <p className='text-center font-bold text-3xl'>Previous Requests</p>
+        <div className='relative min-h-[700px] lg:min-h-[500px] bg-slate-50 rounded-lg py-5 dark:bg-slate-800'>
+          <div className='fixed z-50 top-[15px] right-[122px] lg:top-[118px] lg:right-[140px]'>
+            <CButton1
+              size={'sm'}
+              onClick={handleOpen}
+              title={'Make a request'}
+            />
+          </div>
+          <p className='text-center font-bold text-3xl'>Requests</p>
           {requests.map((request) => (
             <div key={request._id}>
               <RequestCard
@@ -77,6 +98,12 @@ const SingleUserRequestPage = () => {
             <div className='h-[400px] justify-center flex items-center'>
               <img src={Empty} className='w-[200px]' alt='' />
             </div>
+          )}
+          {isModalOpen && (
+            <MakeRequestModal
+              isOpen={isModalOpen}
+              setOpen={() => setIsModalOpen(false)}
+            />
           )}
         </div>
       )}
@@ -124,4 +151,4 @@ const RequestCard = ({ name, date, course, status }) => {
   )
 }
 
-export default SingleUserRequestPage
+export default UserRequestPage

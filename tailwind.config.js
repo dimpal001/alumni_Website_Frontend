@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#e6005c',
-        secandary: '#b30047',
+        primary: '#6c63ff',
+        secandary: '#3d33ff',
       },
     },
   },

@@ -39,7 +39,8 @@ const MakeRequestModal = ({ isOpen, setOpen }) => {
     })
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
     const {
       department,
       admissionYear,
@@ -110,7 +111,7 @@ const MakeRequestModal = ({ isOpen, setOpen }) => {
 
     axios
       .post(
-        'http://192.168.1.15:3000/api/alumni-request',
+        'http://localhost:3000/api/alumni-request',
         {
           id: user._id,
           name: user.name,
@@ -144,6 +145,7 @@ const MakeRequestModal = ({ isOpen, setOpen }) => {
           duration: 2200,
           position: 'top',
         })
+        setOpen(false)
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -176,7 +178,7 @@ const MakeRequestModal = ({ isOpen, setOpen }) => {
     <>
       <Modal isOpen={isOpen} onClose={setOpen}>
         <ModalOverlay />
-        <ModalContent className='bg-slate-50 dark:bg-slate-800'>
+        <ModalContent margin={3} className='bg-slate-50 dark:bg-slate-800'>
           <ModalHeader className='text-slate-800 dark:text-slate-50'>
             <p>Make a request</p>
           </ModalHeader>
@@ -184,89 +186,92 @@ const MakeRequestModal = ({ isOpen, setOpen }) => {
             <Divider width={'90%'} />
           </div>
           <ModalCloseButton color={brandColor.first} />
-          <ModalBody maxH={'470px'} overflowY={'scroll'}>
-            <FormControl
-              className='dark:bg-slate-900 bg-slate-200 rounded-lg p-2'
-              my={3}
-            >
-              <FormLabel
-                className='text-slate-800 text-xs pb-1 dark:text-slate-50'
-                my={1}
+          <ModalBody maxH={{ base: '600px', lg: '580px' }}>
+            <form>
+              <FormControl
+                className='dark:bg-slate-900 bg-slate-200 rounded-lg p-2'
+                my={2}
               >
-                Degree
-              </FormLabel>
-              <Select
-                borderWidth={1}
-                borderColor={brandColor.dark}
-                className='bg-slate-50 dark:bg-slate-800'
-                name={'degree'}
-                value={formData.degree}
+                <FormLabel
+                  className='text-slate-800 text-xs pb-1 dark:text-slate-50'
+                  my={1}
+                >
+                  Degree
+                </FormLabel>
+                <Select
+                  borderWidth={1}
+                  borderColor={brandColor.dark}
+                  className='bg-slate-50 dark:bg-slate-800'
+                  name={'degree'}
+                  value={formData.degree}
+                  onChange={handleInputChange}
+                  fontWeight={'bold'}
+                  color={brandColor.first}
+                >
+                  <option value=''>Select a course type</option>
+                  <option value='BTech'>BTech</option>
+                  <option value='MTech'>MTech</option>
+                  <option value='BArch'>BArch</option>
+                  <option value='MArch'>MArch</option>
+                  <option value='BSc'>BSc</option>
+                  <option value='MSc'>MSc</option>
+                  <option value='BA'>BA</option>
+                  <option value='MA'>MA</option>
+                  <option value='BCom'>BCom</option>
+                  <option value='MCom'>MCom</option>
+                  <option value='BBA'>BBA</option>
+                  <option value='MBA'>MBA</option>
+                  <option value='BA LLB'>BA LLB</option>
+                  <option value='LLM'>LLM</option>
+                  <option value='PhD'>PhD</option>
+                </Select>
+              </FormControl>
+              <LabelInput
+                value={formData.department}
+                label={'Department'}
+                placeholder={'Enter the name of department'}
+                name={'department'}
                 onChange={handleInputChange}
-                fontWeight={'bold'}
-                color={brandColor.first}
-              >
-                <option value=''>Select a course type</option>
-                <option value='BTech'>BTech</option>
-                <option value='MTech'>MTech</option>
-                <option value='BArch'>BArch</option>
-                <option value='MArch'>MArch</option>
-                <option value='BSc'>BSc</option>
-                <option value='MSc'>MSc</option>
-                <option value='BA'>BA</option>
-                <option value='MA'>MA</option>
-                <option value='BCom'>BCom</option>
-                <option value='MCom'>MCom</option>
-                <option value='BBA'>BBA</option>
-                <option value='MBA'>MBA</option>
-                <option value='BA LLB'>BA LLB</option>
-                <option value='LLM'>LLM</option>
-                <option value='PhD'>PhD</option>
-              </Select>
-            </FormControl>
-            <LabelInput
-              value={formData.department}
-              label={'Department'}
-              placeholder={'Enter the name of department'}
-              name={'department'}
-              onChange={handleInputChange}
-            />
-            <LabelInput
-              value={formData.admissionYear}
-              label={'Year of Admission'}
-              placeholder={'Enter the admission year'}
-              name={'admissionYear'}
-              onChange={handleInputChange}
-            />
-            <LabelInput
-              value={formData.completionYear}
-              label={'Year of completion'}
-              placeholder={'Enter the completion year'}
-              name={'completionYear'}
-              onChange={handleInputChange}
-            />
-            <LabelInput
-              value={formData.rollNumber}
-              label={'NEHU Roll Number'}
-              placeholder={'Enter the roll number'}
-              name={'rollNumber'}
-              onChange={handleInputChange}
-            />
-
-            <LabelInput
-              value={formData.cgpa}
-              label={'CGPA'}
-              placeholder={'Enter the CGPA'}
-              name={'cgpa'}
-              onChange={handleInputChange}
-            />
-            <div className='mt-3 mb-4'>
-              <CButton1
-                title={'Send'}
-                onClick={handleSubmit}
-                rightIcon={<BsSendFill />}
-                width={'100%'}
               />
-            </div>
+              <LabelInput
+                value={formData.admissionYear}
+                label={'Year of Admission'}
+                placeholder={'Enter the admission year'}
+                name={'admissionYear'}
+                onChange={handleInputChange}
+              />
+              <LabelInput
+                value={formData.completionYear}
+                label={'Year of completion'}
+                placeholder={'Enter the completion year'}
+                name={'completionYear'}
+                onChange={handleInputChange}
+              />
+              <LabelInput
+                value={formData.rollNumber}
+                label={'NEHU Roll Number'}
+                placeholder={'Enter the roll number'}
+                name={'rollNumber'}
+                onChange={handleInputChange}
+              />
+
+              <LabelInput
+                value={formData.cgpa}
+                label={'CGPA'}
+                placeholder={'Enter the CGPA'}
+                name={'cgpa'}
+                onChange={handleInputChange}
+              />
+              <div className='mt-3 mb-4'>
+                <CButton1
+                  type={'submit'}
+                  title={'Send'}
+                  onClick={handleSubmit}
+                  rightIcon={<BsSendFill />}
+                  width={'100%'}
+                />
+              </div>
+            </form>
           </ModalBody>
         </ModalContent>
       </Modal>

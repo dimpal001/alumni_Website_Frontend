@@ -19,7 +19,7 @@ const AllAlumniRequestsPage = () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     axios
-      .get('http://192.168.1.15:3000/api/alumni-request/all-alumni-requests', {
+      .get('http://localhost:3000/api/alumni-request/all-alumni-requests', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -38,6 +38,11 @@ const AllAlumniRequestsPage = () => {
 
   useEffect(() => {
     fetchData()
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = 'Alumni Requests'
   }, [])
 
   const handleApproveReject = ({ title, id }) => {
@@ -46,7 +51,7 @@ const AllAlumniRequestsPage = () => {
 
     axios
       .put(
-        `http://192.168.1.15:3000/api/alumni-request/alumni-requests/${id}`,
+        `http://localhost:3000/api/alumni-request/alumni-requests/${id}`,
         {
           status: title,
         },

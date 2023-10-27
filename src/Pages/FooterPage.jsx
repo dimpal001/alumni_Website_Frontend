@@ -1,10 +1,17 @@
+import { useContext } from 'react'
 import Logo from '../assets/logo.png'
 import { FaFacebookSquare, FaInstagram } from 'react-icons/fa'
 import { FaLinkedin, FaSquareXTwitter } from 'react-icons/fa6'
+import { UserContext } from '../UserContext'
 const FooterPage = () => {
+  const { user } = useContext(UserContext)
   return (
     <>
-      <footer className='bg-slate-900 relative z-20 max-md:mb-[60px] dark:bg-slate-950 text-white px-5 py-8'>
+      <footer
+        className={`bg-slate-900 relative z-20 ${
+          user && 'max-md:pb-[80px]'
+        } dark:bg-slate-950 text-white px-5 py-8`}
+      >
         <div className='container mx-auto flex flex-col lg:flex-row justify-between items-center'>
           <div className='w-full'>
             <div className='flex justify-center'>

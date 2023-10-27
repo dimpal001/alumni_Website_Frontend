@@ -15,9 +15,16 @@ const AlumniList = () => {
   const navigate = useNavigate()
   const [alumnies, setAlumnies] = useState([])
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = 'Alumnies'
+  }, [])
+  useEffect(() => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     axios
-      .get('http://192.168.1.15:3000/api/alumni-request', {
+      .get('http://localhost:3000/api/alumni-request', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -62,7 +69,7 @@ const AlumniList = () => {
                   alt='User'
                 />
               </div>
-              <div className='w-[80%] flex justify-between'>
+              <div className='w-[80%] max-md:pl-3 flex justify-between'>
                 <div>
                   <div className='flex justify-between flex-col items-start'>
                     <p className='font-bold text-2xl'>{alumni.name}</p>

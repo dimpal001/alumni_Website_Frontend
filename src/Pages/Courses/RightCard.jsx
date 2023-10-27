@@ -1,7 +1,8 @@
 import { Box } from '@chakra-ui/react'
-import { BiLinkExternal } from 'react-icons/bi'
+import { BiEdit, BiLinkExternal } from 'react-icons/bi'
 import { FaLinkedin, FaSquareGithub } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
+import { CButton1 } from '../Components/CustomDesign'
 
 const RightCard = ({ user, onClick }) => {
   return (
@@ -59,12 +60,11 @@ const RightCard = ({ user, onClick }) => {
             )}
           </div>
           <div className='flex justify-center my-3'>
-            <button
+            <CButton1
+              title={'Update'}
               onClick={onClick}
-              className='bg-primary text-white hover:bg-secandary px-3 font-bold py-1 rounded-lg'
-            >
-              Update details
-            </button>
+              rightIcon={<BiEdit size={18} />}
+            />
           </div>
         </div>
       </Box>

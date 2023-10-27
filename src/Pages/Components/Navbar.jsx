@@ -10,10 +10,9 @@ import { CButton1, brandColor } from './CustomDesign'
 import { CgMenuRightAlt } from 'react-icons/cg'
 import '../../App.css'
 import { Link, useNavigate } from 'react-router-dom'
-import Logo from '../../assets/logo.png'
-import { FiLogOut } from 'react-icons/fi'
 import { UserContext } from '../../UserContext'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { BiLogOutCircle } from 'react-icons/bi'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -60,18 +59,18 @@ const Navbar = () => {
 
   return (
     <>
-      <div className='z-10 bg-slate-200 dark:border-gray-600 border-gray-300 fixed top-0 left-0 lg:px-28 items-center px-5 border-b w-full mb-10 dark:bg-slate-900 flex justify-between h-20'>
+      <div className='z-10 bg-slate-200 dark:border-gray-600 border-gray-300 fixed top-0 left-0 lg:px-28 items-center px-5 border-b w-full dark:bg-slate-900 flex justify-between h-16 lg:h-16'>
         <div>
           <Link to={'/'}>
-            <img src={Logo} className='w-[200px]' alt='Logo' />
+            <p className='text-xl lg:text-2xl font-bold'>GradConnect</p>
           </Link>
         </div>
         <div className='flex items-center'>
           <IconButton
-            marginTop={'5px'}
+            marginTop={{ lg: '-1px' }}
             background={'transparent'}
             onClick={toggleDarkMode}
-            mr={{ base: 5, md: 0 }}
+            mr={{ base: 3, md: -5 }}
             size={'md'}
             _hover={{
               background: 'transparent',
@@ -80,20 +79,20 @@ const Navbar = () => {
             }}
             icon={
               isdark ? (
-                <MoonIcon />
+                <MoonIcon color={brandColor.first} />
               ) : (
-                <SunIcon className='dark:text-slate-200' />
+                <SunIcon color={brandColor.first} />
               )
             }
           />
-          <ul className='hidden lg:flex justify-around font-bold w-full'>
+          <ul className='hidden lg:flex items-center justify-around font-bold w-full'>
             <NavItems
               closeMenu={closeMenu}
               onClick={handleLogout}
               user={user}
             />
           </ul>
-          <div className='sm:flex lg:hidden items-center'>
+          <div className='flex lg:hidden items-center'>
             <Menu
               isOpen={menuOpen}
               onOpen={() => setMenuOpen(true)}
@@ -108,7 +107,7 @@ const Navbar = () => {
                 variant='outline'
                 onClick={() => setMenuOpen(!menuOpen)}
               />
-              <MenuList background={brandColor.first}>
+              <MenuList background={brandColor.dark}>
                 <NavItems closeMenu={closeMenu} />
               </MenuList>
             </Menu>
@@ -121,7 +120,7 @@ const Navbar = () => {
 
 const NavItems = ({ closeMenu, onClick, user }) => {
   return (
-    <ul className='pl-5 flex flex-col lg:flex-row space-y-2 items-baseline font-bold'>
+    <ul className='pl-1 lg:pl-5 flex flex-col lg:flex-row max-md:space-y-2 items-baseline font-bold'>
       <Link to='/' onClick={closeMenu}>
         <li>Home</li>
       </Link>
@@ -131,12 +130,12 @@ const NavItems = ({ closeMenu, onClick, user }) => {
       <Link to='/about' onClick={closeMenu}>
         <li>About</li>
       </Link>
-      {user && <li>hjdasf</li>}
       {user && (
         <div className='border-2 lg:border-0 rounded-lg'>
           <CButton1
+            size={'sm'}
             onClick={onClick}
-            rightIcon={<FiLogOut size={19} />}
+            rightIcon={<BiLogOutCircle size={18} />}
             title='Logout'
           />
         </div>

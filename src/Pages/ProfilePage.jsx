@@ -10,7 +10,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { LabelInput, brandColor } from './Components/CustomDesign'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { UserContext } from '../UserContext'
 import LeftCard from './Courses/LeftCard'
@@ -45,7 +45,7 @@ const ProfilePage = ({ userDeials }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     try {
       const response = await axios.put(
-        'http://192.168.1.15:3000/api/update-profile',
+        'http://localhost:3000/api/update-profile',
         {
           worksAt: currentJob,
           positionAtWork: jobPosition,
@@ -98,6 +98,14 @@ const ProfilePage = ({ userDeials }) => {
     }
   }
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+    document.title = 'Dashboard'
+  }, [])
+
   return (
     <>
       <div className='bg-white min-h-[700px] lg:min-h-[500px] dark:bg-slate-800 p-5 lg:rounded-lg'>
@@ -107,7 +115,7 @@ const ProfilePage = ({ userDeials }) => {
             user.type === 'alumni' ? 'grid' : 'flex'
           } grid-cols-1 gap-3 justify-center lg:grid-cols-2`}
         >
-          <LeftCard user={userDeials} />
+          <LeftCard userDetails={userDeials} />
           {user.type === 'alumni' && (
             <RightCard onClick={() => onOpen()} user={userDeials} />
           )}
@@ -117,12 +125,12 @@ const ProfilePage = ({ userDeials }) => {
         )}
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay overflow={'scroll'} />
-          <ModalContent className='dark:bg-slate-900'>
+          <ModalContent className='dark:bg-slate-900 min-h-[600px] mx-3'>
             <ModalHeader className='text-slate-950 dark:text-white'>
               Update details
             </ModalHeader>
-            <ModalCloseButton color={'white'} />
-            <ModalBody maxH={'450px'} overflowY={'scroll'}>
+            <ModalCloseButton color={brandColor.first} />
+            <ModalBody overflowY={'scroll'}>
               <LabelInput
                 label={'Current job'}
                 placeholder={'Enter job/company name'}

@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   useToast,
@@ -18,8 +17,8 @@ import { MdMarkEmailRead, MdLockPerson } from 'react-icons/md'
 import { useContext, useState } from 'react'
 import axios from 'axios'
 import { UserContext } from '../../UserContext'
-import { TbLogin2 } from 'react-icons/tb'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
+import { BiLogInCircle } from 'react-icons/bi'
 
 const LoginModal = ({ open, onClose }) => {
   const toast = useToast()
@@ -42,7 +41,8 @@ const LoginModal = ({ open, onClose }) => {
     setIsPassword(!isPassword)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
     const { email, password } = formData
     if (email === '' || password === '') {
       toast({
@@ -57,7 +57,7 @@ const LoginModal = ({ open, onClose }) => {
 
     setIsLoading(true)
     axios
-      .post('http://192.168.1.15:3000/api/auth/login', {
+      .post('http://localhost:3000/api/auth/login', {
         email: formData.email,
         password: formData.password,
       })
@@ -118,56 +118,60 @@ const LoginModal = ({ open, onClose }) => {
           <Divider mb={3} />
           <ModalCloseButton color={brandColor.first} />
           <ModalBody>
-            <IconInput
-              name={'email'}
-              onChange={handleInputChange}
-              icon={<MdMarkEmailRead size={22} color={brandColor.first} />}
-              placeholder={'Enter your email address'}
-            />
-            <InputGroup
-              className='bg-slate-200 rounded-lg dark:bg-slate-900'
-              mt={4}
-            >
-              <InputLeftElement pointerEvents={'none'}>
-                <MdLockPerson size={22} color={brandColor.first} />
-              </InputLeftElement>
-              <Input
-                name={'password'}
+            <form>
+              <IconInput
+                autoFocus={true}
+                name={'email'}
                 onChange={handleInputChange}
-                color={brandColor.first}
-                fontWeight={'bold'}
-                fontFamily={'arial'}
-                type={isPassword ? 'password' : 'text'}
-                placeholder='Enter your password'
+                icon={<MdMarkEmailRead size={22} color={brandColor.first} />}
+                placeholder={'Enter your email address'}
               />
-              <InputRightElement>
-                {isPassword ? (
-                  <FiEye
-                    size={18}
-                    cursor={'pointer'}
-                    color={brandColor.first}
-                    onClick={toggleType}
-                  />
-                ) : (
-                  <FiEyeOff
-                    size={18}
-                    cursor={'pointer'}
-                    color={brandColor.first}
-                    onClick={toggleType}
-                  />
-                )}
-              </InputRightElement>
-            </InputGroup>
+              <InputGroup
+                className='bg-slate-200 rounded-lg dark:bg-slate-900'
+                mt={4}
+              >
+                <InputLeftElement pointerEvents={'none'}>
+                  <MdLockPerson size={22} color={brandColor.first} />
+                </InputLeftElement>
+                <Input
+                  name={'password'}
+                  onChange={handleInputChange}
+                  color={brandColor.first}
+                  fontWeight={'bold'}
+                  fontFamily={'arial'}
+                  type={isPassword ? 'password' : 'text'}
+                  placeholder='Enter your password'
+                />
+                <InputRightElement>
+                  {isPassword ? (
+                    <FiEye
+                      size={18}
+                      cursor={'pointer'}
+                      color={brandColor.first}
+                      onClick={toggleType}
+                    />
+                  ) : (
+                    <FiEyeOff
+                      size={18}
+                      cursor={'pointer'}
+                      color={brandColor.first}
+                      onClick={toggleType}
+                    />
+                  )}
+                </InputRightElement>
+              </InputGroup>
+              <div className='mt-4 mb-7'>
+                <CButton1
+                  type={'submit'}
+                  rightIcon={<BiLogInCircle size={25} />}
+                  width={'100%'}
+                  onClick={handleSubmit}
+                  isLoading={isLoading}
+                  title={'Login'}
+                />
+              </div>
+            </form>
           </ModalBody>
-          <ModalFooter mt={-2} mb={4}>
-            <CButton1
-              rightIcon={<TbLogin2 size={20} />}
-              width={'100%'}
-              onClick={handleSubmit}
-              isLoading={isLoading}
-              title={'Login'}
-            />
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

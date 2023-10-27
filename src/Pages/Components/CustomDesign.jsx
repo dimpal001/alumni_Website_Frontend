@@ -8,9 +8,10 @@ import {
 } from '@chakra-ui/react'
 
 export const brandColor = {
-  first: '#e6005c',
-  second: '#b30047',
-  dark: '#b3b3b3',
+  first: '#6c63ff',
+  second: '#3d33ff',
+  light: '#e2e8f0;',
+  dark: '#0f172a',
 }
 
 export const Button1 = ({ title, disabled, onClick }) => {
@@ -44,9 +45,13 @@ export const CButton1 = ({
   isLoading,
   loadingText,
   width,
+  size,
+  type,
 }) => {
   return (
     <Button
+      type={type}
+      size={size}
       width={width}
       onClick={onClick}
       disabled={disabled}
@@ -56,7 +61,6 @@ export const CButton1 = ({
       loadingText={loadingText}
       background={brandColor.first}
       _hover={{ background: brandColor.second }}
-      px={7}
       color={'white'}
     >
       {title}
@@ -116,12 +120,14 @@ export const IconInput = ({
   type,
   value,
   onChange,
+  autoFocus,
 }) => {
   return (
     <InputGroup className='bg-slate-200 rounded-lg dark:bg-slate-900' my={4}>
       <InputLeftElement pointerEvents='none'>{icon}</InputLeftElement>
       <Input
         width={width}
+        autoFocus={autoFocus}
         color={brandColor.first}
         fontWeight={'bold'}
         fontFamily={'arial'}
@@ -187,7 +193,7 @@ export const LabelInput = ({
         value={value}
         name={name}
         onChange={onChange}
-        className='dark:bg-slate-900 dark:text-slate-50 placeholder:text-base focus:outline-none font-bold border-b-2 border-slate-900 w-[100%] text-lg focus:border-slate-900 dark:focus:border-slate-100 bg-slate-200'
+        className='dark:bg-slate-900 dark:text-slate-50 placeholder:text-base focus:outline-none font-bold border-b-2 border-slate-900 dark:border-slate-100 w-[100%] text-lg focus:border-slate-900 dark:focus:border-slate-100 bg-slate-200'
         disabled={disabled}
       />
     </FormControl>

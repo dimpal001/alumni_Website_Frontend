@@ -6,11 +6,10 @@ import FooterPage from './Pages/FooterPage'
 import HelpPage from './Pages/HelpPage'
 import AboutPage from './Pages/AboutPage'
 import Error from './Pages/Error'
-import Dashboard from './Pages/Dashboard'
 import ProtectedRoute from './ProtectedRoute'
 import { useContext } from 'react'
 import { UserContext } from './UserContext'
-import Dashboard2 from './Pages/Components/Dashboard2'
+import Dashboard from './Pages/Components/Dashboard'
 
 function App() {
   const { user } = useContext(UserContext)
@@ -20,14 +19,14 @@ function App() {
         <div className='container lg:min-h-screen mx-auto lg:px-20'>
           <BrowserRouter>
             <Navbar />
-            <div className='mt-20 lg:pt-5'>
+            <div className='mt-16 lg:pt-5'>
               <Routes>
-                <Route path='/' element={user ? <Dashboard2 /> : <Home />} />
+                <Route path='/' element={user ? <Dashboard /> : <Home />} />
                 <Route
                   path='/dashboard'
                   element={
                     <ProtectedRoute>
-                      <Dashboard2 />
+                      <Dashboard />
                     </ProtectedRoute>
                   }
                 />

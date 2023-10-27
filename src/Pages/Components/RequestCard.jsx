@@ -56,8 +56,8 @@ const RequestCard = ({
               </Badge>
             )}
           </div>
-          <div className='w-[75%]'>
-            <div className='flex justify-between items-start'>
+          <div className='w-[75%] max-md:pl-3'>
+            <div className='lg:flex justify-between items-start'>
               <p className='font-bold text-lg'>{name}</p>
               <p className='text-xs'>Requested on : {date}</p>
             </div>
@@ -67,13 +67,13 @@ const RequestCard = ({
                 <div className='flex gap-5'>
                   <button
                     onClick={() => click({ title: 'approved', id: id })}
-                    className='px-3 opacity-[0.8] font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
                   >
                     Approve
                   </button>
                   <button
                     onClick={() => click({ title: 'rejected', id: id })}
-                    className='px-3 opacity-[0.8] font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
                   >
                     Reject
                   </button>
@@ -98,7 +98,7 @@ const RequestCard = ({
       </div>
       <Modal size={'sm'} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent className='dark:bg-slate-800 text-white'>
+        <ModalContent className='dark:bg-slate-800 mx-3 text-white'>
           <ModalHeader className='dark:text-white'>
             <div className='flex gap-3'>
               <img
@@ -143,13 +143,13 @@ const RequestCard = ({
                 <div className='flex gap-5'>
                   <button
                     onClick={() => click({ title: 'approved', id: id })}
-                    className='px-3 opacity-[0.8] font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
                   >
                     Approve
                   </button>
                   <button
                     onClick={() => click({ title: 'rejected', id: id })}
-                    className='px-3 opacity-[0.8] font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
                   >
                     Reject
                   </button>
