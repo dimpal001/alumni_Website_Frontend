@@ -67,7 +67,7 @@ const LeftCard = ({ userDetails }) => {
                 <p className='font-bold text-xl'>{userDetails.phone}</p>
               </div>
             )}
-            <div className='flex justify-center'>
+            <div className='flex lg:hidden justify-center'>
               {userDetails && (
                 <CButton1
                   title={'Logout'}

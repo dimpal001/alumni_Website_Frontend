@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Loading from './Components/Loading'
 import { BiSearchAlt } from 'react-icons/bi'
+import { FaUserGraduate } from 'react-icons/fa6'
 const DashboardPage = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -60,10 +61,13 @@ const DashboardPage = ({ user }) => {
   return (
     <>
       {user.type === 'user' && (
-        <Center flexDir={'column'} className=' min-h-[700px] lg:min-h-[500]'>
+        <Center
+          flexDir={'column'}
+          className='min-h-[700px] bg-slate-50 rounded-lg dark:bg-slate-800 lg:min-h-[500px]'
+        >
           <div>
             <div>
-              <p className='text-center text-3xl font-bold pb-10'>
+              <p className='text-center text-3xl font-bold py-10'>
                 Welcome <span className='text-primary'>{user.name}</span>
               </p>
             </div>
@@ -130,9 +134,17 @@ const DashboardPage = ({ user }) => {
                     ))}
                   {isLoading && <Loading title={'Searching...'} />}
                   {isFirstTime && !isLoading && searchResults.length == 0 && (
-                    <p className='text-2xl text-center font-bold opacity-[0.6] mt-14'>
-                      No data found
-                    </p>
+                    <div className=' mt-14'>
+                      <div className='flex justify-center'>
+                        <FaUserGraduate
+                          className='mb-3 opacity-[0.6]'
+                          size={50}
+                        />
+                      </div>
+                      <p className='text-2xl text-center font-bold opacity-[0.6]'>
+                        No results found
+                      </p>
+                    </div>
                   )}
                 </div>
               </Center>

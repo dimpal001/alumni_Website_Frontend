@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import Loading from './Components/Loading'
-import Empty from '../assets/null.png'
 import RequestCard from './Components/RequestCard'
 import { UserContext } from '../UserContext'
 import { useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { BsFillSendCheckFill } from 'react-icons/bs'
 
 const AllAlumniRequestsPage = () => {
   const { setUser } = useContext(UserContext)
@@ -13,9 +13,8 @@ const AllAlumniRequestsPage = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const [requests, setRequest] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const fetchData = () => {
-    setIsLoading(true)
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     axios
@@ -90,32 +89,42 @@ const AllAlumniRequestsPage = () => {
 
   return (
     <>
-      {isLoading ? (
-        <Loading title={'Fetching data...'} />
-      ) : (
-        <div className='bg-slate-50 min-h-[700px] lg:min-h-[500px] dark:bg-slate-800 lg:rounded-lg max-md:px-3 max-md:pb-2 lg:p-5'>
-          <p className='text-center py-3 font-bold text-3xl'>Alumni Requests</p>
-          {requests.map((request) => (
-            <div key={request._id}>
-              <RequestCard
-                name={request.name}
-                date={new Date(request.requestDate).toLocaleDateString()}
-                course={request.courses}
-                click={handleApproveReject}
-                id={request._id}
-                status={request.status}
-                gender={request.gender}
-                type={request.type}
-              />
-            </div>
-          ))}
-          {requests.length === 0 && (
-            <div className='h-[400px] justify-center flex items-center'>
-              <img src={Empty} className='w-[200px]' alt='' />
-            </div>
-          )}
-        </div>
-      )}
+      <div className='bg-slate-50 min-h-[700px] lg:min-h-[500px] dark:bg-slate-800 lg:rounded-lg max-md:px-3 max-md:pb-2 lg:p-5'>
+        <p className='text-center pb-3 font-bold text-3xl'>Alumni Requests</p>
+        {isLoading ? (
+          <Loading title={'Loading Alumni Requests...'} />
+        ) : (
+          <div>
+            {requests.map((request) => (
+              <div key={request._id}>
+                <RequestCard
+                  name={request.name}
+                  date={new Date(request.requestDate).toLocaleDateString()}
+                  course={request.courses}
+                  click={handleApproveReject}
+                  id={request._id}
+                  status={request.status}
+                  gender={request.gender}
+                  type={request.type}
+                />
+              </div>
+            ))}
+            {requests.length === 0 && (
+              <div className=' mt-14'>
+                <div className='flex justify-center'>
+                  <BsFillSendCheckFill
+                    className='mb-3 opacity-[0.6]'
+                    size={50}
+                  />
+                </div>
+                <p className='text-2xl text-center font-bold opacity-[0.6]'>
+                  No results found
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </>
   )
 }

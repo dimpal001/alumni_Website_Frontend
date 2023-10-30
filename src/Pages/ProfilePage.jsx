@@ -109,7 +109,7 @@ const ProfilePage = ({ userDeials }) => {
   return (
     <>
       <div className='bg-white min-h-[700px] lg:min-h-[500px] dark:bg-slate-800 p-5 lg:rounded-lg'>
-        <p className='text-center font-bold text-3xl py-3'>User Profile</p>
+        <p className='text-center font-bold text-3xl pb-3'>User Profile</p>
         <div
           className={`${
             user.type === 'alumni' ? 'grid' : 'flex'

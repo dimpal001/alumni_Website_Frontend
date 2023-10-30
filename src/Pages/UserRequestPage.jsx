@@ -1,19 +1,19 @@
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import Loading from './Components/Loading'
-import Empty from '../assets/null.png'
 import { useToast } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../UserContext'
 import MakeRequestModal from './Components/MakeRequestModal'
 import { CButton1 } from './Components/CustomDesign'
+import { BsFillSendCheckFill } from 'react-icons/bs'
 
 const UserRequestPage = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const { setUser } = useContext(UserContext)
   const [requests, setRequest] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -22,7 +22,6 @@ const UserRequestPage = () => {
   }
 
   const fetchData = () => {
-    setIsLoading(true)
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     axios
@@ -69,44 +68,50 @@ const UserRequestPage = () => {
 
   return (
     <>
-      {isLoading ? (
-        <Loading title={'Fetching data...'} />
-      ) : (
-        <div className='relative min-h-[700px] lg:min-h-[500px] bg-slate-50 rounded-lg py-5 dark:bg-slate-800'>
-          <div className='fixed z-50 top-[15px] right-[122px] lg:top-[118px] lg:right-[140px]'>
-            <CButton1
-              size={'sm'}
-              onClick={handleOpen}
-              title={'Make a request'}
-            />
-          </div>
-          <p className='text-center font-bold text-3xl'>Requests</p>
-          {requests.map((request) => (
-            <div key={request._id}>
-              <RequestCard
-                name={request.name}
-                date={new Date(request.requestDate).toLocaleDateString()}
-                course={request.courses}
-                id={request._id}
-                status={request.status}
-                gender={request.gender}
-                type={request.type}
-              />
-            </div>
-          ))}
-          {requests.length === 0 && (
-            <div className='h-[400px] justify-center flex items-center'>
-              <img src={Empty} className='w-[200px]' alt='' />
-            </div>
-          )}
-          {isModalOpen && (
-            <MakeRequestModal
-              isOpen={isModalOpen}
-              setOpen={() => setIsModalOpen(false)}
-            />
-          )}
+      <div className='relative min-h-[700px] lg:min-h-[500px] bg-slate-50 rounded-lg py-5 dark:bg-slate-800'>
+        <div className='fixed z-50 top-[15px] right-[122px] lg:top-[118px] lg:right-[140px]'>
+          <CButton1 size={'sm'} onClick={handleOpen} title={'Make a request'} />
         </div>
-      )}
+        <p className='text-center font-bold text-3xl'>Requests</p>
+        {isLoading ? (
+          <Loading title={'Fetching Requests...'} />
+        ) : (
+          <div>
+            {requests.map((request) => (
+              <div key={request._id}>
+                <RequestCard
+                  name={request.name}
+                  date={new Date(request.requestDate).toLocaleDateString()}
+                  course={request.courses}
+                  id={request._id}
+                  status={request.status}
+                  gender={request.gender}
+                  type={request.type}
+                />
+              </div>
+            ))}
+            {requests.length === 0 && (
+              <div className=' mt-14'>
+                <div className='flex justify-center'>
+                  <BsFillSendCheckFill
+                    className='mb-3 opacity-[0.6]'
+                    size={50}
+                  />
+                </div>
+                <p className='text-2xl text-center font-bold opacity-[0.6]'>
+                  No results found
+                </p>
+              </div>
+            )}
+            {isModalOpen && (
+              <MakeRequestModal
+                isOpen={isModalOpen}
+                setOpen={() => setIsModalOpen(false)}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </>
   )
 }

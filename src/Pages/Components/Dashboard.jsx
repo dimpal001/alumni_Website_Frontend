@@ -5,17 +5,12 @@ import AllAlumniRequestsPage from '../AllAlumniRequestsPage'
 import PostPage from '../PostPage'
 import AlumniList from '../AlumniList'
 import { UserContext } from '../../UserContext'
-import {
-  FaBorderAll,
-  FaHome,
-  FaListAlt,
-  FaUserAlt,
-  FaUsers,
-} from 'react-icons/fa'
+import { FaHome, FaListAlt, FaUserAlt, FaUsers } from 'react-icons/fa'
 import { BsSendFill } from 'react-icons/bs'
 import { FiGrid, FiHome, FiList, FiUser, FiUsers } from 'react-icons/fi'
 import DashboardPage from '../DashboardPage'
 import UserRequestPage from '../UserRequestPage'
+import { AiTwotoneNotification } from 'react-icons/ai'
 
 const Dashboard = () => {
   const [selectedComponent, setSelectedComponent] = useState('Dashboard')
@@ -91,8 +86,8 @@ const Dashboard = () => {
               onClick={() => setSelectedComponent('Posts')}
             >
               <div className='flex gap-3'>
-                <FaBorderAll size={20} />
-                Posts
+                <AiTwotoneNotification size={20} />
+                Announcements
               </div>
             </button>
           )}
@@ -105,7 +100,7 @@ const Dashboard = () => {
             >
               <div className='flex gap-3'>
                 <BsSendFill size={20} />
-                Previous Request
+                Requests
               </div>
             </button>
           )}
@@ -118,7 +113,7 @@ const Dashboard = () => {
             >
               <div className='flex gap-3'>
                 <FaListAlt size={20} />
-                Alumni List
+                Alumnies
               </div>
             </button>
           )}

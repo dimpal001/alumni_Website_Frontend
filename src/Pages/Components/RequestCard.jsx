@@ -12,6 +12,8 @@ import {
 import Female from '../../assets/female.svg'
 import Male from '../../assets/male.svg'
 import { brandColor } from './CustomDesign'
+import { BsCheck2All, BsCheck2Circle, BsXCircle } from 'react-icons/bs'
+import { RxCross2 } from 'react-icons/rx'
 
 const RequestCard = ({
   name,
@@ -67,26 +69,30 @@ const RequestCard = ({
                 <div className='flex gap-5'>
                   <button
                     onClick={() => click({ title: 'approved', id: id })}
-                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-success text-white rounded-lg'
                   >
+                    <BsCheck2Circle size={18} className='inline-block mr-1' />
                     Approve
                   </button>
                   <button
                     onClick={() => click({ title: 'rejected', id: id })}
-                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
+                    className='px-3 font-bold text-sm py-1 bg-error text-white rounded-lg'
                   >
+                    <BsXCircle size={15} className='inline-block mr-1' />
                     Reject
                   </button>
                 </div>
               ) : status === 'approved' ? (
                 <div>
                   <button className='px-3 cursor-default opacity-[0.8] font-bold text-sm py-1 bg-green-600 text-white rounded-lg'>
+                    <BsCheck2All size={18} className='inline-block mr-1' />
                     Approved
                   </button>
                 </div>
               ) : (
                 <div>
                   <button className='px-3 opacity-[0.8] cursor-default font-bold text-sm py-1 bg-red-600 text-white rounded-lg'>
+                    <RxCross2 size={18} className='inline-block mr-1' />
                     Rejected
                   </button>
                 </div>
@@ -136,38 +142,6 @@ const RequestCard = ({
                 <p>CGPA</p>
                 <p>{course.cgpa}</p>
               </div>
-            </div>
-            <Divider mb={3} />
-            <div className='flex mb-2 justify-center'>
-              {status === 'pending' ? (
-                <div className='flex gap-5'>
-                  <button
-                    onClick={() => click({ title: 'approved', id: id })}
-                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => click({ title: 'rejected', id: id })}
-                    className='px-3 font-bold text-sm py-1 bg-primary text-white rounded-lg'
-                  >
-                    Reject
-                  </button>
-                </div>
-              ) : status === 'approved' ? (
-                <div>
-                  <button className='px-3 cursor-default opacity-[0.8] font-bold text-sm py-1 bg-green-600 text-white rounded-lg'>
-                    Approved
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <button className='px-3 opacity-[0.8] cursor-default font-bold text-sm py-1 bg-red-600 text-white rounded-lg'>
-                    Rejected
-                  </button>
-                </div>
-              )}
-              {}
             </div>
           </ModalBody>
         </ModalContent>

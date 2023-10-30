@@ -7,6 +7,8 @@ export default {
       colors: {
         primary: '#6c63ff',
         secandary: '#3d33ff',
+        success: '#00b300',
+        error: '#cc2900',
       },
     },
   },

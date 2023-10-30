@@ -11,7 +11,10 @@ const PostPage = () => {
   }, [])
   return (
     <>
-      <Center className='min-h-[500px] bg-slate-50 rounded-lg p-5 dark:bg-slate-800 lg:px-20'></Center>
+      <div className='min-h-[700px] lg:min-h-[500px] bg-slate-50 rounded-lg p-5 dark:bg-slate-800 lg:px-20'>
+        <p className='text-center font-bold pb-3 text-3xl'>Announcements</p>
+        <Center></Center>
+      </div>
     </>
   )
 }
