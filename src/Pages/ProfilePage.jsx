@@ -16,6 +16,7 @@ import { UserContext } from '../UserContext'
 import LeftCard from './Courses/LeftCard'
 import RightCard from './Courses/RightCard'
 import CourseCard from './Courses/CourseCard'
+import ManageContent from './ManageContents/ManageContent'
 const ProfilePage = ({ userDeials }) => {
   const navigate = useToast()
   const { user, setUser } = useContext(UserContext)
@@ -110,19 +111,14 @@ const ProfilePage = ({ userDeials }) => {
     <>
       <div className='bg-white min-h-[700px] lg:min-h-[500px] dark:bg-slate-800 p-5 lg:rounded-lg'>
         <p className='text-center font-bold text-3xl pb-3'>User Profile</p>
-        <div
-          className={`${
-            user.type === 'alumni' ? 'grid' : 'flex'
-          } grid-cols-1 gap-3 justify-center lg:grid-cols-2`}
-        >
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
           <LeftCard userDetails={userDeials} />
           {user.type === 'alumni' && (
             <RightCard onClick={() => onOpen()} user={userDeials} />
           )}
+          {user.type === 'admin' && <ManageContent user={userDeials} />}
         </div>
-        {user.type === 'alumni' && (
-          <CourseCard courses={user.parmanentCourses} />
-        )}
+        {user.type === 'alumni' && <CourseCard />}
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay overflow={'scroll'} />
           <ModalContent className='dark:bg-slate-900 min-h-[600px] mx-3'>

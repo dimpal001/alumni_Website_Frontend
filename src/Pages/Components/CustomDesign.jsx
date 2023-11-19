@@ -50,6 +50,7 @@ export const CButton1 = ({
 }) => {
   return (
     <Button
+      className='rounded-lg'
       type={type}
       size={size}
       width={width}
@@ -182,18 +183,15 @@ export const LabelInput = ({
   disabled,
 }) => {
   return (
-    <FormControl
-      className='dark:bg-slate-900 bg-slate-200 rounded-lg p-2 '
-      my={4}
-    >
-      <p className='text-sm dark:text-slate-50'>{label}</p>
+    <FormControl className='p-2 ' my={2}>
+      <p className='text-sm py-1  dark:text-slate-50'>{label}</p>
       <input
         type={type}
         placeholder={placeholder}
         value={value}
         name={name}
         onChange={onChange}
-        className='dark:bg-slate-900 dark:text-slate-50 placeholder:text-base focus:outline-none font-bold border-b-2 border-slate-900 dark:border-slate-100 w-[100%] text-lg focus:border-slate-900 dark:focus:border-slate-100 bg-slate-200'
+        className='p-2 rounded-lg border dark:text-white focus:outline-none focus:border-primary bg-transparent w-full'
         disabled={disabled}
       />
     </FormControl>

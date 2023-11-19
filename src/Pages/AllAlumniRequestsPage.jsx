@@ -1,9 +1,17 @@
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import Loading from './Components/Loading'
-import RequestCard from './Components/RequestCard'
 import { UserContext } from '../UserContext'
-import { useToast } from '@chakra-ui/react'
+import {
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { BsFillSendCheckFill } from 'react-icons/bs'
 
@@ -46,7 +54,6 @@ const AllAlumniRequestsPage = () => {
 
   const handleApproveReject = ({ title, id }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
-    console.log(id)
 
     axios
       .put(
@@ -60,9 +67,19 @@ const AllAlumniRequestsPage = () => {
           },
         }
       )
-      .then((response) => {
-        console.log(response)
+      .then(() => {
         fetchData()
+        toast({
+          title: `${
+            title === 'approved'
+              ? 'The request has been approved.'
+              : 'The request has been rejected.'
+          }`,
+          status: 'success',
+          isClosable: true,
+          duration: 1800,
+          position: 'top',
+        })
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -94,21 +111,78 @@ const AllAlumniRequestsPage = () => {
         {isLoading ? (
           <Loading title={'Loading Alumni Requests...'} />
         ) : (
-          <div>
-            {requests.map((request) => (
-              <div key={request._id}>
-                <RequestCard
-                  name={request.name}
-                  date={new Date(request.requestDate).toLocaleDateString()}
-                  course={request.courses}
-                  click={handleApproveReject}
-                  id={request._id}
-                  status={request.status}
-                  gender={request.gender}
-                  type={request.type}
-                />
-              </div>
-            ))}
+          <div className='w-full text-base'>
+            {requests.length > 0 && (
+              <TableContainer className='text-sm'>
+                <Table
+                  className='text-xs border'
+                  width={'100%'}
+                  variant={'simple'}
+                >
+                  <Thead>
+                    <Tr className='text-center' width={'100%'}>
+                      <Th width={'10%'}>Name</Th>
+                      <Th width={'20%'}>Degree</Th>
+                      <Th width={'20%'}>Department</Th>
+                      <Th width={'5%'} className='text-center'>
+                        Batch
+                      </Th>
+                      <Th width={'20%'}>
+                        Roll <br />
+                        Number
+                      </Th>
+                      <Th width={'5%'}>CGPA</Th>
+                      <Th width={'20%'}>Action</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {requests.map((request, index) => (
+                      <Tr
+                        className='hover:bg-slate-900 transition-all delay-[0.01s]'
+                        key={index}
+                      >
+                        <Td>{request.name}</Td>
+                        <Td>{request.courses.degree}</Td>
+                        <Td>{request.courses.department}</Td>
+                        <Td>{request.courses.admissionYear}</Td>
+                        <Td>{request.courses.rollNumber}</Td>
+                        <Td>{request.courses.cgpa}</Td>
+                        <Td>
+                          <div>
+                            {request.status === 'pending' && (
+                              <div className='flex flex-col gap-2'>
+                                <button
+                                  onClick={() =>
+                                    handleApproveReject({
+                                      title: 'approved',
+                                      id: request._id,
+                                    })
+                                  }
+                                  className='px-3 font-bold text-sm py-1 bg-success hover:bg-hoverSuccess text-white rounded-lg'
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleApproveReject({
+                                      title: 'rejected',
+                                      id: request._id,
+                                    })
+                                  }
+                                  className='px-3 font-bold text-sm py-1 bg-error hover:bg-hoverError text-white rounded-lg'
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            )}
             {requests.length === 0 && (
               <div className=' mt-14'>
                 <div className='flex justify-center'>

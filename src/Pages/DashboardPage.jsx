@@ -1,21 +1,29 @@
 import { Center, IconButton, useToast } from '@chakra-ui/react'
 import Image from '../assets/dashboard.svg'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
-import { brandColor } from './Components/CustomDesign'
-import { MdShareLocation, MdWork } from 'react-icons/md'
+import { CButton1, brandColor } from './Components/CustomDesign'
 import Male from '../assets/male.svg'
 import Female from '../assets/female.svg'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Loading from './Components/Loading'
 import { BiSearchAlt } from 'react-icons/bi'
-import { FaUserGraduate } from 'react-icons/fa6'
+import { FaGraduationCap, FaUserGraduate } from 'react-icons/fa6'
+import MakeRequestModal from './Components/MakeRequestModal'
+import AlumniProfileModal from './Components/AlumniProfileModal'
 const DashboardPage = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFirstTime, setIsFirstTime] = useState(false)
+  const [isAlumniModalOpen, setIsAlumniModalOpen] = useState(false)
+  const [selectedAlumniId, setSelectedAlumniId] = useState('')
   const toast = useToast()
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false)
+
+  const handleModalOpen = () => {
+    setIsRequestModalOpen(true)
+  }
 
   useEffect(() => {
     window.scrollTo({
@@ -58,6 +66,11 @@ const DashboardPage = ({ user }) => {
       console.error(error)
     }
   }
+
+  const handleAlumniModalOpen = () => {
+    setIsAlumniModalOpen(true)
+  }
+
   return (
     <>
       {user.type === 'user' && (
@@ -75,12 +88,19 @@ const DashboardPage = ({ user }) => {
               <img className='w-[80%] lg:w-[60%]' src={Image} alt='' />
             </div>
           </div>
-          <div>
-            <p className='text-center py-10 text-xl font-bold'>
-              Make a request to be an{' '}
-              <span className='text-primary'>Alumni</span>
-            </p>
+          <div className='mt-5'>
+            <CButton1
+              leftIcon={<FaUserGraduate />}
+              title={'Be an alumni'}
+              onClick={handleModalOpen}
+            />
           </div>
+          {isRequestModalOpen && (
+            <MakeRequestModal
+              isOpen={true}
+              setOpen={() => setIsRequestModalOpen(false)}
+            />
+          )}
         </Center>
       )}
       <div>
@@ -116,18 +136,20 @@ const DashboardPage = ({ user }) => {
                     Search Result : {searchResults.length}
                   </p>
                 )}
-                <div className='w-[95%] lg:w-[70%]'>
+                <div className='w-full lg:grid lg:grid-cols-2 place-content-center lg:justify-center px-5 lg:gap-x-5'>
                   {searchResults &&
                     searchResults.map((alumni, index) => (
-                      <div key={index}>
+                      <div key={index} className='my-3'>
                         <AlumniCard
                           name={alumni.name}
                           gender={alumni.gender}
-                          worksAt={alumni.otherInfo.worksAt}
-                          address={alumni.otherInfo.address}
+                          degree={alumni.parmanentCourses[0].degree}
+                          department={alumni.parmanentCourses[0].department}
+                          batch={alumni.parmanentCourses[0].admissionYear}
                           click={(e) => {
                             e.preventDefault()
-                            alert('Hi')
+                            handleAlumniModalOpen()
+                            setSelectedAlumniId(alumni._id)
                           }}
                         />
                       </div>
@@ -151,37 +173,51 @@ const DashboardPage = ({ user }) => {
             </form>
           </div>
         )}
+        {isAlumniModalOpen && (
+          <AlumniProfileModal
+            isOpen={true}
+            onClose={() => setIsAlumniModalOpen(false)}
+            alumniId={selectedAlumniId}
+          />
+        )}
       </div>
     </>
   )
 }
 
-const AlumniCard = ({ name, gender, worksAt, address, click }) => {
+const AlumniCard = ({ name, gender, degree, department, batch, click }) => {
   return (
     <>
-      <div className='flex w-[100%] bg-slate-200 dark:bg-slate-900 rounded-lg max-md:mb-3 lg:m-2 p-4'>
-        <div className='w-[20%] flex pr-4 justify-center'>
+      <div className=' w-[90%] min-h-[150px] bg-slate-200 dark:bg-slate-900 rounded-lg max-md:mb-3 p-4'>
+        <div className='w-[100%] flex pr-4 justify-center'>
           <img
             src={gender === 'male' ? Male : Female}
-            className='w-[80px]'
+            className='w-[120px]'
             alt='User'
           />
         </div>
-        <div className='w-[80%] flex justify-between'>
+        <div className='w-[100%] flex lg:px-8 justify-between'>
           <div className='w-[100%]'>
-            <div className='flex justify-between w-[100%] flex-col items-start'>
-              <p className='font-bold text-2xl'>{name}</p>
-              <div className='block lg:flex gap-5 '>
-                {worksAt != '' && (
-                  <div className='flex py-1 items-center'>
-                    <MdWork size={15} />
-                    <p className='text-xs pt-1 pl-1'>Works at {worksAt}</p>
+            <div className='w-full'>
+              <p className='font-bold text-center text-2xl'>{name}</p>
+              <div className='flex justify-center'>
+                {degree && department && (
+                  <div className='flex justify-center'>
+                    <div className='flex font-bold py-1 items-start'>
+                      <FaGraduationCap size={20} className='mt-1' />
+                      <p className='text-sm text-center pt-1 pl-1'>
+                        {degree} in {department}
+                      </p>
+                    </div>
                   </div>
                 )}
-                {address != '' && (
-                  <div className='flex items-center'>
-                    <MdShareLocation size={17} />
-                    <p className='text-sm font-bold pt-1 pl-1'>{address}</p>
+              </div>
+              <div className='flex justify-center'>
+                {batch && (
+                  <div>
+                    <p className='font-bold'>
+                      Batch : <span className='text-primary'>{batch}</span>{' '}
+                    </p>
                   </div>
                 )}
               </div>
@@ -190,12 +226,11 @@ const AlumniCard = ({ name, gender, worksAt, address, click }) => {
                   onClick={click}
                   className='rounded-lg bg-primary text-white hover:bg-primary hover:text-white transition-all delay-[0.05s] font-bold text-sm w-[100%] py-[6px] px-10'
                 >
-                  Explore
+                  View Profile
                 </button>
               </div>
             </div>
           </div>
-          <div className='flex flex-col justify-around'></div>
         </div>
       </div>
     </>

@@ -20,7 +20,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { BiUserCircle } from 'react-icons/bi'
 
-const SignUpModal = ({ open, onClose }) => {
+const SignUpModal = ({ title, open, onClose }) => {
   const toast = useToast()
   const [isSubmited, setIsSubmited] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -107,15 +107,23 @@ const SignUpModal = ({ open, onClose }) => {
     }
 
     try {
+      const jwtToken = sessionStorage.getItem('jwtToken')
       setIsLoading(true)
       const response = await axios.post(
-        'http://localhost:3000/api/auth/signup',
+        title === 'createAdmin'
+          ? 'http://localhost:3000/api/auth/create-admin'
+          : 'http://localhost:3000/api/auth/signup',
         {
           name: name,
           email: email,
           phone: phone,
           gender: gender,
           password: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
         }
       )
       setIsSubmited(true)
@@ -155,7 +163,9 @@ const SignUpModal = ({ open, onClose }) => {
         <ModalContent className='dark:bg-slate-800' mx={3}>
           {!isSubmited && (
             <div>
-              <ModalHeader color={brandColor.first}>Sign Up</ModalHeader>
+              <ModalHeader color={brandColor.first}>
+                {title === 'createAdmin' ? 'Create a new admin' : 'Sign Up'}
+              </ModalHeader>
               <Divider mb={3} />
             </div>
           )}
@@ -163,6 +173,11 @@ const SignUpModal = ({ open, onClose }) => {
           {!isSubmited ? (
             <ModalBody>
               <form>
+                {title != 'createAdmin' && (
+                  <p className='p-0 text-primary text-[15px] text-center m-0'>
+                    Name should be same as the Degree record !
+                  </p>
+                )}
                 <IconInput
                   name={'name'}
                   onChange={handleInputChange}
@@ -232,10 +247,14 @@ const SignUpModal = ({ open, onClose }) => {
                     <CButton1
                       type={'submit'}
                       width={'100%'}
-                      title={'Signup'}
+                      title={title === 'createAdmin' ? 'Create' : 'Signup'}
                       onClick={handleSubmit}
                       isLoading={isLoading}
-                      loadingText={'Submitting...'}
+                      loadingText={
+                        title === 'createAdmin'
+                          ? 'Creating...'
+                          : 'Submitting...'
+                      }
                       rightIcon={<BiUserCircle size={25} />}
                     />
                   </div>
@@ -248,7 +267,9 @@ const SignUpModal = ({ open, onClose }) => {
                 className='text-3xl text-center font-bold py-5'
                 style={{ color: brandColor.first }}
               >
-                Registration Successfull
+                {title === 'createAdmin'
+                  ? 'A new admin has been created'
+                  : 'Registration Successfull'}
               </p>
             </ModalBody>
           )}

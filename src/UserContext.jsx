@@ -8,15 +8,30 @@ const UserProvider = ({ children }) => {
     return storedUser ? JSON.parse(storedUser) : null
   })
 
+  const [content, setContent] = useState(() => {
+    const storedContent = sessionStorage.getItem('content')
+    return storedContent ? JSON.parse(storedContent) : null
+  })
+
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem('user'))
     if (storedUser) {
       setUser(storedUser)
     }
+
+    const storedContent = JSON.parse(sessionStorage.getItem('content'))
+    if (storedContent) {
+      setContent(storedContent)
+    }
   }, [])
 
+  const updateContent = (newContent) => {
+    sessionStorage.setItem('content', JSON.stringify(newContent))
+    setContent(newContent)
+  }
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, content, updateContent }}>
       {children}
     </UserContext.Provider>
   )

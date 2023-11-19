@@ -7,8 +7,10 @@ export default {
       colors: {
         primary: '#6c63ff',
         secandary: '#3d33ff',
-        success: '#00b300',
-        error: '#cc2900',
+        success: '#1f8f2c',
+        hoverSuccess: '#125219',
+        error: '#c91212',
+        hoverError: '#871010',
       },
     },
   },

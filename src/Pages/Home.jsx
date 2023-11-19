@@ -91,10 +91,7 @@ const Home = () => {
         </div>
       </Box>
       {isSignupOpen && (
-        <SignUpModal
-          open={isSignupOpen}
-          onClose={() => setIsSignupOpen(false)}
-        />
+        <SignUpModal open={true} onClose={() => setIsSignupOpen(false)} />
       )}
       {isLoginOpen && (
         <LoginModal open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />

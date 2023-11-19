@@ -15,8 +15,8 @@ function App() {
   const { user } = useContext(UserContext)
   return (
     <>
-      <div className='dark:bg-slate-900 bg-slate-200  dark:text-white'>
-        <div className='container lg:min-h-screen mx-auto lg:px-20'>
+      <div className='dark:bg-slate-900 bg-slate-200 text-black dark:text-white'>
+        <div className='lg:min-h-screen mx-auto lg:px-10'>
           <BrowserRouter>
             <Navbar />
             <div className='mt-16 lg:pt-5'>

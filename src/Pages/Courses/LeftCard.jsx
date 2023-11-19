@@ -13,7 +13,7 @@ const LeftCard = ({ userDetails }) => {
   return (
     <>
       <Box
-        width={{ base: '100%', lg: userDetails.type === 'admin' && '55%' }}
+        width={{ base: '100%' }}
         className='bg-slate-200 dark:bg-slate-900'
         borderRadius={'2xl'}
       >

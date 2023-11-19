@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import Male from '../assets/male.svg'
 import Female from '../assets/female.svg'
-import { MdWork } from 'react-icons/md'
+import { MdKeyboardArrowRight, MdWork } from 'react-icons/md'
 import { MdShareLocation } from 'react-icons/md'
 import { FaSquareGithub, FaLinkedin, FaUserGraduate } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
@@ -30,10 +30,42 @@ const AlumniList = () => {
   const [degree, setDegree] = useState('Degree')
   const currentYear = new Date().getFullYear()
   const startYear = currentYear - 49
-  const years = [...Array(50)].map((_, index) => startYear + index)
+  const years = [...[...Array(50)].map((_, index) => startYear + index), 'All']
   const [batch, setBatch] = useState('Batch')
+  const [degrees, setDegrees] = useState([])
+  const [departments, setDepartments] = useState([])
+
+  const fetchContent = async () => {
+    const jwtToken = sessionStorage.getItem('jwtToken')
+
+    await axios
+      .get('http://localhost:3000/api/content', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      })
+      .then((response) => {
+        const updatedDegrees = [
+          { name: 'Degree' },
+          ...response.data.degrees.map((degree) => ({ ...degree })),
+        ]
+
+        setDegrees(updatedDegrees)
+
+        const updatedDepartments = [
+          { name: 'Department' },
+          ...response.data.departments.map((department) => ({ ...department })),
+        ]
+
+        setDepartments(updatedDepartments)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   useEffect(() => {
+    fetchContent()
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
@@ -90,30 +122,15 @@ const AlumniList = () => {
 
   useEffect(() => {
     filterData(dept, degree, batch)
-  }, [dept, degree, batch])
+  }, [alumnies, dept, degree, batch])
 
   const filterData = (selectedDept, selectedDegree, selectedBatch) => {
-    console.log(
-      'Before state update: Dept:',
-      dept,
-      'Degree:',
-      degree,
-      'Batch:',
-      batch
-    )
-
     setDept(selectedDept)
     setDegree(selectedDegree)
     setBatch(selectedBatch)
-
-    console.log(
-      'After state update: Dept:',
-      selectedDept,
-      'Degree:',
-      selectedDegree,
-      'Batch:',
-      selectedBatch
-    )
+    console.log(selectedDegree)
+    console.log(selectedBatch)
+    console.log(selectedDept)
 
     if (
       selectedDept === 'Department' &&
@@ -127,7 +144,8 @@ const AlumniList = () => {
       if (selectedDept !== 'Department') {
         filteredData = filteredData.filter((alumni) =>
           alumni.parmanentCourses.some(
-            (course) => course.department.toLowerCase() === selectedDept
+            (course) =>
+              course.department.toLowerCase() === selectedDept.toLowerCase()
           )
         )
       }
@@ -135,12 +153,13 @@ const AlumniList = () => {
       if (selectedDegree !== 'Degree') {
         filteredData = filteredData.filter((alumni) =>
           alumni.parmanentCourses.some(
-            (course) => course.degree.toLowerCase() === selectedDegree
+            (course) =>
+              course.degree.toLowerCase() === selectedDegree.toLowerCase()
           )
         )
       }
 
-      if (selectedBatch !== 'Batch') {
+      if (selectedBatch !== 'All') {
         filteredData = filteredData.filter((alumni) =>
           alumni.parmanentCourses.some(
             (course) => course.admissionYear === selectedBatch
@@ -151,9 +170,6 @@ const AlumniList = () => {
       setFilterAlumnies(filteredData)
     }
   }
-
-  const departments = ['Department', 'it', 'bme', 'ece', 'ene']
-  const degrees = ['Degree', 'btech', 'mtech', 'ba', 'ma', 'bsc', 'msc']
 
   return (
     <>
@@ -182,13 +198,21 @@ const AlumniList = () => {
                     {departments.map((item, index) => (
                       <div key={index}>
                         <MenuItem
+                          _hover={{ bg: brandColor.dark }}
                           onClick={() => {
                             setDept(item)
-                            filterData(item, degree, batch)
+                            filterData(item.name, degree, batch)
                           }}
-                          className='dark:bg-slate-800 uppercase hover:bg-slate-500'
+                          className='dark:bg-slate-800'
                         >
-                          {item === 'Department' ? 'All' : item}
+                          <div className='flex'>
+                            <MdKeyboardArrowRight
+                              size={20}
+                              className='mt-[2px] mr-2'
+                              style={{ color: brandColor.first }}
+                            />
+                            {item.name === 'Department' ? 'All' : item.name}
+                          </div>
                         </MenuItem>
                       </div>
                     ))}
@@ -211,19 +235,27 @@ const AlumniList = () => {
                     {degrees.map((item, index) => (
                       <div key={index}>
                         <MenuItem
+                          _hover={{ background: brandColor.dark }}
                           onClick={() => {
                             setDegree(item)
-                            filterData(dept, item, batch)
+                            filterData(dept, item.name, batch)
                           }}
-                          className='dark:bg-slate-800 uppercase hover-bg-slate-500'
+                          className='dark:bg-slate-800'
                         >
-                          {item === 'Degree' ? 'All' : item}
+                          <div className='flex'>
+                            <MdKeyboardArrowRight
+                              size={20}
+                              className='mt-[2px] mr-2'
+                              style={{ color: brandColor.first }}
+                            />
+                            {item.name === 'Degree' ? 'All' : item.name}
+                          </div>
                         </MenuItem>
                       </div>
                     ))}
                   </MenuList>
                 </Menu>
-                <Menu>
+                <Menu size={'lg'}>
                   <MenuButton
                     _hover={{ bg: brandColor.second }}
                     _active={{ bg: brandColor.first }}
@@ -234,7 +266,7 @@ const AlumniList = () => {
                     rightIcon={<ChevronDownIcon />}
                     className={`${degree != 'Degree' && 'uppercase'}`}
                   >
-                    {batch != 'Batch' ? 'Batch ' + batch : batch}
+                    {batch != 'Batch' ? batch + ' Batch ' : batch}
                   </MenuButton>
                   <MenuList
                     maxH={'300px'}
@@ -244,13 +276,21 @@ const AlumniList = () => {
                     {years.reverse().map((item, index) => (
                       <div key={index}>
                         <MenuItem
+                          _hover={{ background: brandColor.dark }}
                           onClick={() => {
                             setBatch(item)
                             filterData(dept, degree, item)
                           }}
-                          className='dark:bg-slate-800 uppercase hover-bg-slate-500'
+                          className='dark:bg-slate-800'
                         >
-                          {item}
+                          <div className='flex'>
+                            <MdKeyboardArrowRight
+                              size={20}
+                              className='mt-[2px] mr-5'
+                              style={{ color: brandColor.first }}
+                            />
+                            {item}
+                          </div>
                         </MenuItem>
                       </div>
                     ))}
