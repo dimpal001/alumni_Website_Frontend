@@ -8,6 +8,10 @@ import SinglPostModal from './Components/SinglPostModal'
 import AlumniPostRequest from './Components/AlumniPostRequest'
 import Loading from './Components/Loading'
 import { UserContext } from '../UserContext'
+import { api } from './Components/API'
+import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
+import { MdAnnouncement } from 'react-icons/md'
+import { IoOptionsSharp } from 'react-icons/io5'
 
 const PostPage = () => {
   const { user } = useContext(UserContext)
@@ -31,9 +35,7 @@ const PostPage = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get(
-        'http://localhost:3000/api/announcement/all'
-      )
+      const response = await axios.get(`${api}/api/announcement/all`)
       setAnnouncements(response.data)
       console.log(announcements)
       setLoading(false)
@@ -55,20 +57,64 @@ const PostPage = () => {
       {loading ? (
         <Loading title={'Fetching data...'} />
       ) : (
-        <div className='min-h-[700px] lg:min-h-[530px] bg-slate-50 rounded-lg p-5 dark:bg-slate-800 lg:px-10'>
-          <p className='text-center font-bold pb-3 text-3xl'>Announcements</p>
+        <div className='min-h-[700px] lg:min-h-[530px] bg-slate-50 rounded-lg p-3 dark:bg-slate-800 lg:px-10'>
+          <div className='flex justify-around items-baseline'>
+            <p className='text-center font-bold pb-3 text-3xl'>Announcements</p>
+            <div className='md:hidden'>
+              <Menu>
+                <MenuButton>
+                  <IoOptionsSharp size={25} />
+                </MenuButton>
+                <MenuList className='dark:bg-slate-950'>
+                  <MenuItem
+                    onClick={handleModalOpen}
+                    className='font-bold dark:bg-slate-950'
+                  >
+                    <span className='text-primary'>Create</span>
+                  </MenuItem>
+                  {user.type === 'admin' && (
+                    <MenuItem
+                      onClick={handlePostRequest}
+                      className='font-bold dark:bg-slate-950'
+                    >
+                      <span className='text-primary'>
+                        Announcement Requests
+                      </span>
+                    </MenuItem>
+                  )}
+                </MenuList>
+              </Menu>
+            </div>
+          </div>
           {isAnnouceModalOpen && (
             <UploadAnnouncementModal
               isOpen={true}
               onClose={() => setIsAnnounceModalOpen(false)}
             />
           )}
-          <div className='flex w-full'>
-            <div className='w-[55%]'>
+          <div className='w-full'>
+            <div className='md:flex hidden gap-x-3 md:justify-start max-sm:justify-center'>
+              <div className=' my-3'>
+                <div className='flex justify-center'>
+                  <CButton1 onClick={handleModalOpen} title={'Create a post'} />
+                </div>
+              </div>
+              {user.type === 'admin' && (
+                <div className=' my-3'>
+                  <div className='flex justify-center'>
+                    <CButton1
+                      onClick={handlePostRequest}
+                      title={'Alumni Post Requests'}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className=''>
               {announcements &&
                 announcements.map((announcements, index) => (
                   <div key={index}>
-                    <div className='px-4 py-3 border rounded-lg my-3'>
+                    <div className='px-4 py-3 dark:bg-slate-900 bg-slate-200 rounded-lg my-3'>
                       <div className='flex'>
                         <img
                           src={announcements.gender === 'male' ? Male : Female}
@@ -78,7 +124,13 @@ const PostPage = () => {
                         <div className='pl-5'>
                           <p className='font-bold'>{announcements.name}</p>
                           <p className='text-sm'>
-                            {announcements.uploadDateTime}
+                            {new Date(
+                              announcements.uploadDateTime
+                            ).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
                           </p>
                         </div>
                       </div>
@@ -99,7 +151,7 @@ const PostPage = () => {
                       >
                         {announcements.attachment && (
                           <img
-                            src={`http://localhost:3000/api/announcement/uploads/${announcements.attachment}`}
+                            src={`${api}/api/announcement/uploads/${announcements.attachment}`}
                             alt='Announcement Attachment'
                             className='w-full overflow-hidden rounded-lg max-h-[450px]'
                           />
@@ -108,21 +160,14 @@ const PostPage = () => {
                     </div>
                   </div>
                 ))}
-            </div>
-            <div className='w-[45%]'>
-              <div className=' my-3'>
-                <div className='flex justify-center'>
-                  <CButton1 onClick={handleModalOpen} title={'Create a post'} />
-                </div>
-              </div>
-              {user.type === 'admin' && (
-                <div className=' my-3'>
+              {announcements && announcements.length === 0 && (
+                <div className=' mt-14'>
                   <div className='flex justify-center'>
-                    <CButton1
-                      onClick={handlePostRequest}
-                      title={'Alumni Post Requests'}
-                    />
+                    <MdAnnouncement className='mb-3 opacity-[0.6]' size={50} />
                   </div>
+                  <p className='text-2xl text-center font-bold opacity-[0.6]'>
+                    No results found
+                  </p>
                 </div>
               )}
             </div>

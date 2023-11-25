@@ -5,6 +5,8 @@ import {
   ModalContent,
   ModalOverlay,
 } from '@chakra-ui/react'
+import { api } from './API'
+import { brandColor } from './CustomDesign'
 
 const SinglPostModal = ({ isOpen, onClose, announcement }) => {
   // const formattedDate = new Date(
@@ -16,22 +18,24 @@ const SinglPostModal = ({ isOpen, onClose, announcement }) => {
   // })
   return (
     <>
-      <Modal
-        size={{ base: 'full', lg: 'xl' }}
-        isOpen={isOpen}
-        onClose={onClose}
-      >
+      <Modal size={'full'} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-900'>
-          <ModalCloseButton />
-          <ModalBody>
-            <div className='p-2 my-3'>
+          <ModalCloseButton color={brandColor.first} />
+          <ModalBody
+            marginTop={4}
+            className='flex max-h-screen justify-center items-center'
+          >
+            <div className='my-3'>
               <div className='rounded-lg'>
                 {announcement.attachment && (
                   <img
-                    src={`http://localhost:3000/api/announcement/uploads/${announcement.attachment}`}
+                    src={`${api}/api/announcement/uploads/${announcement.attachment}`}
                     alt='Announcement Attachment'
-                    className='rounded-lg'
+                    style={{
+                      maxHeight: window.innerHeight - 100,
+                      width: 'auto',
+                    }}
                   />
                 )}
               </div>

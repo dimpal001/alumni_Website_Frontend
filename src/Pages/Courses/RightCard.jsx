@@ -18,22 +18,18 @@ const RightCard = ({ user, onClick }) => {
               <p className=''>Mobile Number</p>
               <p className='font-bold text-xl'>{user.phone}</p>
             </div>
-            {user.otherInfo.worksAt !== '' && (
-              <div className='mt-4 mb-1'>
-                <p className=''>Working at</p>
-                <p className='font-bold text-xl'>{user.otherInfo.worksAt}</p>
-              </div>
-            )}
-            {user.otherInfo.positionAtWork != '' && (
-              <div className='mt-4 mb-1'>
-                <p className=''>Job position</p>
+            {user.type === 'alumni' && user.otherInfo.address && (
+              <div className='mt-3 mb-1'>
+                <p className=''>Current Address</p>
                 <p className='font-bold text-xl'>
-                  {user.otherInfo.positionAtWork}
+                  {user.otherInfo.address
+                    ? user.otherInfo.address
+                    : 'Not provided'}
                 </p>
               </div>
             )}
           </div>
-          <div className='flex mt-2 justify-around'>
+          <div className='flex mt-3 justify-around'>
             {user.otherInfo.website != '' && (
               <Link target='_blank' to={`${user.otherInfo.website}`}>
                 <div className='flex hover:text-primary delay-[0.05s] transition-all justify-center flex-col items-center'>
@@ -61,7 +57,8 @@ const RightCard = ({ user, onClick }) => {
           </div>
           <div className='flex justify-center my-3'>
             <CButton1
-              title={'Update'}
+              width={'100%'}
+              title={'Update Personal Details'}
               onClick={onClick}
               rightIcon={<BiEdit size={18} />}
             />

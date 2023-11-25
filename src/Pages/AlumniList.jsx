@@ -2,10 +2,10 @@ import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import Male from '../assets/male.svg'
 import Female from '../assets/female.svg'
-import { MdKeyboardArrowRight, MdWork } from 'react-icons/md'
+import { MdKeyboardArrowRight } from 'react-icons/md'
 import { MdShareLocation } from 'react-icons/md'
-import { FaSquareGithub, FaLinkedin, FaUserGraduate } from 'react-icons/fa6'
-import { Link, useNavigate } from 'react-router-dom'
+import { FaUserGraduate } from 'react-icons/fa6'
+import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../UserContext'
 import {
   Button,
@@ -15,31 +15,34 @@ import {
   MenuList,
   useToast,
 } from '@chakra-ui/react'
+import { FaGraduationCap } from 'react-icons/fa6'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import { brandColor } from './Components/CustomDesign'
 import Loading from './Components/Loading'
+import { api } from './Components/API'
+import AlumniProfileModal from './Components/AlumniProfileModal'
 
 const AlumniList = () => {
-  const { setUser } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
   const toast = useToast()
   const navigate = useNavigate()
   const [alumnies, setAlumnies] = useState([])
   const [filterAlumnies, setFilterAlumnies] = useState([])
-  const [dept, setDept] = useState('Department')
   const [isLoading, setIsLoading] = useState(true)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [selectedProfile, setSelectedProfile] = useState('')
   const [degree, setDegree] = useState('Degree')
   const currentYear = new Date().getFullYear()
   const startYear = currentYear - 49
   const years = [...[...Array(50)].map((_, index) => startYear + index), 'All']
   const [batch, setBatch] = useState('Batch')
   const [degrees, setDegrees] = useState([])
-  const [departments, setDepartments] = useState([])
 
   const fetchContent = async () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     await axios
-      .get('http://localhost:3000/api/content', {
+      .get(`${api}/api/departments/degrees/${user.department}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -51,17 +54,15 @@ const AlumniList = () => {
         ]
 
         setDegrees(updatedDegrees)
-
-        const updatedDepartments = [
-          { name: 'Department' },
-          ...response.data.departments.map((department) => ({ ...department })),
-        ]
-
-        setDepartments(updatedDepartments)
       })
       .catch((error) => {
         console.log(error)
       })
+  }
+
+  const handleProfileModal = ({ alumniId }) => {
+    setIsProfileModalOpen(true)
+    setSelectedProfile(alumniId)
   }
 
   useEffect(() => {
@@ -73,10 +74,10 @@ const AlumniList = () => {
     document.title = 'Alumnies'
   }, [])
 
-  useEffect(() => {
+  const fetchAlumniList = () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     axios
-      .get('http://localhost:3000/api/alumni-request', {
+      .get(`${api}/api/auth/alumnies`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -86,69 +87,29 @@ const AlumniList = () => {
         setFilterAlumnies(response.data)
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          setUser(null)
-          sessionStorage.removeItem('jwtToken')
-          sessionStorage.removeItem('user')
-          navigate('/')
-          toast({
-            title: 'Session expired!',
-            description: 'You need to login again.',
-            status: 'error',
-            isClosable: true,
-            duration: 2500,
-            position: 'top',
-          })
-          return
-        }
-
-        setUser(null)
-        sessionStorage.removeItem('jwtToken')
-        sessionStorage.removeItem('user')
-        navigate('/')
-        toast({
-          title: 'Something is wrong!',
-          description: 'You need to login again.',
-          status: 'error',
-          isClosable: true,
-          duration: 2500,
-          position: 'top',
-        })
+        handleApiError(error)
       })
       .finally(() => {
         setIsLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchAlumniList()
   }, [])
 
   useEffect(() => {
-    filterData(dept, degree, batch)
-  }, [alumnies, dept, degree, batch])
+    filterData(degree, batch)
+  }, [alumnies, degree, batch])
 
-  const filterData = (selectedDept, selectedDegree, selectedBatch) => {
-    setDept(selectedDept)
+  const filterData = (selectedDegree, selectedBatch) => {
     setDegree(selectedDegree)
     setBatch(selectedBatch)
-    console.log(selectedDegree)
-    console.log(selectedBatch)
-    console.log(selectedDept)
 
-    if (
-      selectedDept === 'Department' &&
-      selectedDegree === 'Degree' &&
-      selectedBatch === 'Batch'
-    ) {
+    if (selectedDegree === 'Degree' && selectedBatch === 'Batch') {
       setFilterAlumnies(alumnies)
     } else {
       let filteredData = alumnies
-
-      if (selectedDept !== 'Department') {
-        filteredData = filteredData.filter((alumni) =>
-          alumni.parmanentCourses.some(
-            (course) =>
-              course.department.toLowerCase() === selectedDept.toLowerCase()
-          )
-        )
-      }
 
       if (selectedDegree !== 'Degree') {
         filteredData = filteredData.filter((alumni) =>
@@ -169,6 +130,41 @@ const AlumniList = () => {
 
       setFilterAlumnies(filteredData)
     }
+  }
+
+  const handleFetch = () => {
+    fetchAlumniList()
+  }
+
+  const handleApiError = (error) => {
+    if (error.response && error.response.status === 401) {
+      setUser(null)
+      sessionStorage.removeItem('jwtToken')
+      sessionStorage.removeItem('user')
+      navigate('/')
+      toast({
+        title: 'Session expired!',
+        description: 'You need to login again.',
+        status: 'error',
+        isClosable: true,
+        duration: 2500,
+        position: 'top',
+      })
+      return
+    }
+
+    setUser(null)
+    sessionStorage.removeItem('jwtToken')
+    sessionStorage.removeItem('user')
+    navigate('/')
+    toast({
+      title: 'Something is wrong!',
+      description: 'You need to login again.',
+      status: 'error',
+      isClosable: true,
+      duration: 2500,
+      position: 'top',
+    })
   }
 
   return (
@@ -192,43 +188,6 @@ const AlumniList = () => {
                     rightIcon={<ChevronDownIcon />}
                     className={`uppercase`}
                   >
-                    {dept}
-                  </MenuButton>
-                  <MenuList className='dark:bg-slate-800'>
-                    {departments.map((item, index) => (
-                      <div key={index}>
-                        <MenuItem
-                          _hover={{ bg: brandColor.dark }}
-                          onClick={() => {
-                            setDept(item)
-                            filterData(item.name, degree, batch)
-                          }}
-                          className='dark:bg-slate-800'
-                        >
-                          <div className='flex'>
-                            <MdKeyboardArrowRight
-                              size={20}
-                              className='mt-[2px] mr-2'
-                              style={{ color: brandColor.first }}
-                            />
-                            {item.name === 'Department' ? 'All' : item.name}
-                          </div>
-                        </MenuItem>
-                      </div>
-                    ))}
-                  </MenuList>
-                </Menu>
-                <Menu>
-                  <MenuButton
-                    _hover={{ bg: brandColor.second }}
-                    _active={{ bg: brandColor.first }}
-                    color={'white'}
-                    size={'sm'}
-                    background={brandColor.first}
-                    as={Button}
-                    rightIcon={<ChevronDownIcon />}
-                    className={`uppercase`}
-                  >
                     {degree}
                   </MenuButton>
                   <MenuList className='dark:bg-slate-800'>
@@ -238,7 +197,7 @@ const AlumniList = () => {
                           _hover={{ background: brandColor.dark }}
                           onClick={() => {
                             setDegree(item)
-                            filterData(dept, item.name, batch)
+                            filterData(item.name, batch)
                           }}
                           className='dark:bg-slate-800'
                         >
@@ -264,9 +223,9 @@ const AlumniList = () => {
                     background={brandColor.first}
                     as={Button}
                     rightIcon={<ChevronDownIcon />}
-                    className={`${degree != 'Degree' && 'uppercase'}`}
+                    className={`${degree !== 'Degree' && 'uppercase'}`}
                   >
-                    {batch != 'Batch' ? batch + ' Batch ' : batch}
+                    {batch !== 'Batch' ? batch + ' Batch ' : batch}
                   </MenuButton>
                   <MenuList
                     maxH={'300px'}
@@ -279,7 +238,7 @@ const AlumniList = () => {
                           _hover={{ background: brandColor.dark }}
                           onClick={() => {
                             setBatch(item)
-                            filterData(dept, degree, item)
+                            filterData(degree, item)
                           }}
                           className='dark:bg-slate-800'
                         >
@@ -297,63 +256,46 @@ const AlumniList = () => {
                   </MenuList>
                 </Menu>
               </div>
-              {filterAlumnies.map((alumni, index) => (
-                <div
-                  key={index}
-                  className='flex bg-slate-200 rounded-lg dark:bg-slate-900 m-2 p-4'
-                >
-                  <div className='w-[20%] flex justify-center'>
-                    <img
-                      src={alumni.gender === 'male' ? Male : Female}
-                      className='w-[80px]'
-                      alt='User'
-                    />
-                  </div>
-                  <div className='w-[80%] max-md:pl-3 flex justify-between'>
-                    <div>
-                      <div className='flex justify-between flex-col items-start'>
-                        <p className='font-bold text-2xl'>{alumni.name}</p>
-                        {alumni.otherInfo.worksAt && (
-                          <div className='flex py-1 items-center'>
-                            <MdWork size={15} />
-                            <p className='text-xs pt-1 pl-1'>
-                              Works at {alumni.otherInfo.worksAt}
-                            </p>
+              <div className='alumniListcardContainner w-full'>
+                {filterAlumnies.map((alumni, index) => (
+                  <div
+                    onClick={() => handleProfileModal({ alumniId: alumni._id })}
+                    key={index}
+                    className='flex alumniCard bg-slate-200 rounded-lg cursor-pointer dark:bg-slate-900 m-2 p-4'
+                  >
+                    <div className='w-[20%] flex justify-center'>
+                      <img
+                        src={alumni.gender === 'male' ? Male : Female}
+                        className='w-[80px]'
+                        alt='User'
+                      />
+                    </div>
+                    <div className='w-[80%] max-md:pl-3 flex justify-between'>
+                      <div>
+                        <div className='flex justify-between flex-col items-start'>
+                          <p className='font-bold text-2xl'>{alumni.name}</p>
+                          <div>
+                            <div className='flex'>
+                              <FaGraduationCap className='mt-[1px] mr-1' />
+                              <p className='text-sm'>
+                                Dept. of {alumni.department}
+                              </p>
+                            </div>
+                            {alumni.otherInfo.address && (
+                              <div className='flex '>
+                                <MdShareLocation className='mt-[1px] mr-1' />
+                                <p className='text-sm'>
+                                  Lives in {alumni.otherInfo.address}
+                                </p>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {alumni.otherInfo.address && (
-                          <div className='flex items-center'>
-                            <MdShareLocation size={17} />
-                            <p className='text-sm font-bold pt-1 pl-1'>
-                              {alumni.otherInfo.address}
-                            </p>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     </div>
-                    <div className='flex flex-col justify-around'>
-                      {alumni.otherInfo.linkedInLink !== '' && (
-                        <Link
-                          target='_blank'
-                          to={`${alumni.otherInfo.linkedInLink}`}
-                          className='hover:text-primary transition-all delay-[0.05s]'
-                        >
-                          <FaLinkedin size={30} />
-                        </Link>
-                      )}
-                      {alumni.otherInfo.gitHubLink !== '' && (
-                        <Link
-                          target='_blank'
-                          to={`${alumni.otherInfo.gitHubLink}`}
-                          className='hover:text-primary transition-all delay-[0.05s]'
-                        >
-                          <FaSquareGithub size={30} />
-                        </Link>
-                      )}
-                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
               {filterAlumnies.length === 0 && (
                 <div className=' mt-14'>
                   <div className='flex justify-center'>
@@ -367,6 +309,14 @@ const AlumniList = () => {
             </div>
           )}
         </div>
+        {isProfileModalOpen && (
+          <AlumniProfileModal
+            isOpen={true}
+            onClose={() => setIsProfileModalOpen(false)}
+            alumniId={selectedProfile}
+            fetchData={handleFetch}
+          />
+        )}
       </div>
     </>
   )

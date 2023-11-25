@@ -16,6 +16,7 @@ import Female from '../../assets/female.svg'
 import { IoMdImages } from 'react-icons/io'
 import axios from 'axios'
 import { CButton1 } from './CustomDesign'
+import { api } from './API'
 
 const UploadAnnouncementModal = ({ isOpen, onClose }) => {
   const { user } = useContext(UserContext)
@@ -91,7 +92,7 @@ const UploadAnnouncementModal = ({ isOpen, onClose }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     await axios
-      .post('http://localhost:3000/api/announcement/upload', formData, {
+      .post(`${api}/api/announcement/upload`, formData, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           'Content-Type': 'multipart/form-data',
@@ -129,16 +130,20 @@ const UploadAnnouncementModal = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size={{ base: 'full', md: 'xl' }}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
-        <ModalContent className='dark:bg-slate-900'>
+        <ModalContent className='dark:bg-slate-900 dark:text-white'>
           <ModalHeader>Create announcement</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Divider className='mt-[-15px]' />
             <div>
               <div>
-                <div className='flex px-2 py-2'>
+                <div className='flex dark:text-white px-2 py-2'>
                   <img
                     src={user.gender === 'male' ? Male : Female}
                     className='w-[40px]'
@@ -153,7 +158,7 @@ const UploadAnnouncementModal = ({ isOpen, onClose }) => {
                     required
                     type='text'
                     placeholder='Title...'
-                    className='px-3 font-bold placeholder:font-normal focus:outline-none dark:bg-slate-800 py-1 w-full rounded-md'
+                    className='px-3 bg-slate-100 font-bold placeholder:font-normal focus:outline-none dark:bg-slate-800 py-1 w-full rounded-md'
                   />
                 </div>
                 <div className='px-3 py-2'>
@@ -164,7 +169,7 @@ const UploadAnnouncementModal = ({ isOpen, onClose }) => {
                     cols='30'
                     rows='5'
                     placeholder='Description...'
-                    className='px-3 font-bold placeholder:font-normal focus:outline-none dark:bg-slate-800 py-1 w-full rounded-md'
+                    className='px-3 bg-slate-100 font-bold placeholder:font-normal focus:outline-none dark:bg-slate-800 py-1 w-full rounded-md'
                   ></textarea>
                 </div>
                 <div className='px-3'>
@@ -175,11 +180,11 @@ const UploadAnnouncementModal = ({ isOpen, onClose }) => {
                       id='attachment'
                       name='file'
                       onChange={handleFileChange}
-                      accept='image/jpeg, image/jpg, image/png' // Specify accepted file types
+                      accept='image/jpeg, image/jpg, image/png'
                       required
                     />
                     <Button
-                      className='w-full cursor-pointer dark:bg-slate-800'
+                      className='w-full cursor-pointer dark:text-white dark:bg-slate-800'
                       size={'sm'}
                       leftIcon={<IoMdImages size={20} />}
                       as='span'

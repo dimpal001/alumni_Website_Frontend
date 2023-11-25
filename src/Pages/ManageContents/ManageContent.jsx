@@ -12,36 +12,36 @@ import {
 } from '@chakra-ui/react'
 import { CButton1 } from '../Components/CustomDesign'
 import { MdCheckCircle } from 'react-icons/md'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import UpdateDegreeModal from './UpdateDegreeModal'
-import UpdateDepartmentModal from './UpdateDepartmentModal'
 import axios from 'axios'
 import UploadAlumniData from '../UploadAlumniData'
 import SignUpModal from '../Components/SignUpModal'
 import { MdOutlineCloudUpload } from 'react-icons/md'
 import { FiUserPlus } from 'react-icons/fi'
+import { api } from '../Components/API'
+import { UserContext } from '../../UserContext'
 
 const ManageContent = () => {
+  const { user } = useContext(UserContext)
   const [isDegreeModalOpen, setIsDegreeModalOpen] = useState(false)
-  const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false)
   const [isNewAdminModalOpen, setIsNewAdminModalOpen] = useState(false)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [degrees, setDegrees] = useState([])
-  const [departments, setDepartments] = useState([])
   const [openAccordion, setOpenAccordion] = useState(null)
 
   const fetchContent = async () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     await axios
-      .get('http://localhost:3000/api/content', {
+      .get(`${api}/api/departments/degrees/${user.department}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       })
       .then((response) => {
+        console.log(response.data)
         setDegrees(response.data.degrees)
-        setDepartments(response.data.departments)
       })
       .catch((error) => {
         console.log(error)
@@ -60,10 +60,6 @@ const ManageContent = () => {
     setIsDegreeModalOpen(true)
     setOpenAccordion(null)
   }
-  const handleDepartmentModalOpen = () => {
-    setIsDepartmentModalOpen(true)
-    setOpenAccordion(null)
-  }
 
   const handleNewAdminModalOpen = () => {
     setIsNewAdminModalOpen(true)
@@ -76,18 +72,21 @@ const ManageContent = () => {
           <div className='p-5'>
             <div>
               <Accordion
-                className='rounded-lg flex flex-col gap-5'
+                className='flex border-0 flex-col gap-5'
                 allowToggle
-                borderWidth={0}
-                boxShadow={0}
                 index={openAccordion}
+                ringOffsetColor={'transparent'}
                 onChange={(index) => setOpenAccordion(index)}
               >
                 <AccordionItem
-                  className='rounded-lg bg-slate-50 dark:bg-slate-800'
+                  className='rounded-lg hover:rounded-lg bg-slate-50 dark:bg-slate-800'
                   borderWidth={0}
+                  ringOffsetColor={'transparent'}
                 >
-                  <AccordionButton onClick={() => fetchContent()}>
+                  <AccordionButton
+                    className='border-0 hover:rounded-lg hover:bg-white'
+                    onClick={() => fetchContent()}
+                  >
                     <Box
                       as='span'
                       flex='1'
@@ -107,7 +106,10 @@ const ManageContent = () => {
                     <List className='font-bold mt-3'>
                       {degrees &&
                         degrees.map((degree, index) => (
-                          <ListItem className='rounded-lg my-1' key={index}>
+                          <ListItem
+                            className='rounded-lg text-slate-950 dark:text-white my-1'
+                            key={index}
+                          >
                             <div className='flex w-full'>
                               <ListIcon
                                 as={MdCheckCircle}
@@ -116,47 +118,6 @@ const ManageContent = () => {
                               />
                               <div className='flex w-full justify-between items-center'>
                                 {degree.name}
-                              </div>
-                            </div>
-                          </ListItem>
-                        ))}
-                    </List>
-                  </AccordionPanel>
-                </AccordionItem>
-                <AccordionItem
-                  style={{ borderBottomWidth: 0 }}
-                  className='rounded-lg bg-slate-50 dark:bg-slate-800'
-                  borderWidth={0}
-                >
-                  <AccordionButton onClick={() => fetchContent()}>
-                    <Box
-                      as='span'
-                      flex='1'
-                      className='font-bold'
-                      textAlign='left'
-                    >
-                      Department
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <Divider className='mb-3' />
-                    <CButton1
-                      onClick={handleDepartmentModalOpen}
-                      title={'Update department'}
-                    />
-                    <List className='font-bold mt-3'>
-                      {departments &&
-                        departments.map((department, index) => (
-                          <ListItem className='rounded-lg my-1' key={index}>
-                            <div className='flex w-full'>
-                              <ListIcon
-                                as={MdCheckCircle}
-                                className='mt-1'
-                                color='green.500'
-                              />
-                              <div className='flex w-full justify-between items-center'>
-                                {department.name}
                               </div>
                             </div>
                           </ListItem>
@@ -188,12 +149,6 @@ const ManageContent = () => {
           <UpdateDegreeModal
             isOpen={true}
             onClose={() => setIsDegreeModalOpen(false)}
-          />
-        )}
-        {isDepartmentModalOpen && (
-          <UpdateDepartmentModal
-            isOpen={true}
-            onClose={() => setIsDepartmentModalOpen(false)}
           />
         )}
         {isUploadModalOpen && (

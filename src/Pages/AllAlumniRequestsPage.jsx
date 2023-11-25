@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { BsFillSendCheckFill } from 'react-icons/bs'
+import { api } from './Components/API'
 
 const AllAlumniRequestsPage = () => {
   const { setUser } = useContext(UserContext)
@@ -26,7 +27,7 @@ const AllAlumniRequestsPage = () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     axios
-      .get('http://localhost:3000/api/alumni-request/all-alumni-requests', {
+      .get(`${api}/api/alumni-request/all-alumni-requests`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -57,7 +58,7 @@ const AllAlumniRequestsPage = () => {
 
     axios
       .put(
-        `http://localhost:3000/api/alumni-request/alumni-requests/${id}`,
+        `${api}/api/alumni-request/alumni-requests/${id}`,
         {
           status: title,
         },

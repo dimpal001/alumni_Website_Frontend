@@ -1,4 +1,5 @@
 import {
+  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,16 +23,19 @@ import { BsPersonWorkspace } from 'react-icons/bs'
 import { FaPhoneSquare } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { UserContext } from '../../UserContext'
+import { MdDeleteForever } from 'react-icons/md'
+import { api } from './API'
+import DeleteUser from './DeleteUser'
 
-const AlumniProfileModal = ({ isOpen, onClose, alumniId }) => {
-  console.log(alumniId)
+const AlumniProfileModal = ({ isOpen, onClose, alumniId, fetchData }) => {
   const [alumni, setAlumni] = useState()
   const [isLoading, setIsLoading] = useState(true)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const { user } = useContext(UserContext)
   useEffect(() => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     axios
-      .get(`http://localhost:3000/api/auth/${alumniId}`, {
+      .get(`${api}/api/auth/${alumniId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -47,9 +51,23 @@ const AlumniProfileModal = ({ isOpen, onClose, alumniId }) => {
         console.log(alumni)
       })
   }, [])
+
+  const handleDeleteModal = () => {
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleClose = () => {
+    onClose()
+    fetchData()
+  }
+
   return (
     <>
-      <Modal isOpen={isOpen} size={'xl'} onClose={onClose}>
+      <Modal
+        isOpen={isOpen}
+        size={{ base: 'full', md: 'xl' }}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-900 dark:text-white'>
           {isLoading ? (
@@ -97,7 +115,7 @@ const AlumniProfileModal = ({ isOpen, onClose, alumniId }) => {
                             <div key={index}>
                               <InfoCard1
                                 icon={
-                                  <FaGraduationCap size={22} className='mr-4' />
+                                  <FaGraduationCap size={30} className='mr-4' />
                                 }
                                 info={`${course.degree} in ${course.department} | ${course.admissionYear}`}
                               />
@@ -208,9 +226,34 @@ const AlumniProfileModal = ({ isOpen, onClose, alumniId }) => {
                           </div>
                         ))}
                     </div>
+                    {user.type === 'admin' && (
+                      <div className='mb-5'>
+                        <Button
+                          rightIcon={<MdDeleteForever size={20} />}
+                          className='w-full '
+                          background={'red.500'}
+                          _hover={{
+                            background: 'red.600',
+                          }}
+                          onClick={handleDeleteModal}
+                          color={'white'}
+                        >
+                          Delete User
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </ModalBody>
+              {isDeleteModalOpen && (
+                <DeleteUser
+                  isOpen={true}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  userId={alumniId}
+                  onParenModalClose={handleClose}
+                  alumniName={alumni.name}
+                />
+              )}
             </div>
           )}
         </ModalContent>

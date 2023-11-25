@@ -19,6 +19,7 @@ import axios from 'axios'
 import { UserContext } from '../../UserContext'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import { BiLogInCircle } from 'react-icons/bi'
+import { api } from './API'
 
 const LoginModal = ({ open, onClose }) => {
   const toast = useToast()
@@ -57,7 +58,7 @@ const LoginModal = ({ open, onClose }) => {
 
     setIsLoading(true)
     axios
-      .post('http://localhost:3000/api/auth/login', {
+      .post(`${api}/api/auth/login`, {
         email: formData.email,
         password: formData.password,
       })
@@ -126,10 +127,7 @@ const LoginModal = ({ open, onClose }) => {
                 icon={<MdMarkEmailRead size={22} color={brandColor.first} />}
                 placeholder={'Enter your email address'}
               />
-              <InputGroup
-                className='bg-slate-200 rounded-lg dark:bg-slate-900'
-                mt={4}
-              >
+              <InputGroup className='bg-transparent rounded-lg ' mt={4}>
                 <InputLeftElement pointerEvents={'none'}>
                   <MdLockPerson size={22} color={brandColor.first} />
                 </InputLeftElement>

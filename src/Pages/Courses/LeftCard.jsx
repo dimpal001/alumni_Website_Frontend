@@ -3,13 +3,22 @@ import FemaleImg from '../../assets/female.svg'
 import { Box } from '@chakra-ui/react'
 import { CButton1 } from '../Components/CustomDesign'
 import { BiLogOutCircle } from 'react-icons/bi'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { UserContext } from '../../UserContext'
 import { useNavigate } from 'react-router-dom'
+import { RiLockPasswordFill } from 'react-icons/ri'
+import ChangePasswordModal from '../Components/ChangePasswordModal'
 
 const LeftCard = ({ userDetails }) => {
   const { setUser } = useContext(UserContext)
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false)
   const navigate = useNavigate()
+
+  const handleChangePasswordModal = () => {
+    setIsChangePasswordModalOpen(true)
+  }
+
   return (
     <>
       <Box
@@ -34,42 +43,27 @@ const LeftCard = ({ userDetails }) => {
             {userDetails.type === 'alumni' && (
               <p className='text-center py-1 text-xs font-bold'>
                 {userDetails.parmanentCourses[0].degree} in{' '}
-                {userDetails.parmanentCourses[0].department} |{' '}
+                {userDetails.parmanentCourses[0].department} <br />
                 {userDetails.parmanentCourses[0].admissionYear} -{' '}
                 {userDetails.parmanentCourses[0].completionYear}
               </p>
             )}
-            <div className='mt-3 mb-1'>
-              <p className='text-sm'>Gender</p>
-              <p className='font-bold capitalize text-xl'>
-                {userDetails.gender}
-              </p>
-            </div>
             {userDetails.type === 'admin' && (
-              <div className='mt-3 mb-1'>
+              <div className='mt-4 mb-1'>
                 <p className=''>Email Address</p>
                 <p className='font-bold text-xl'>{userDetails.email}</p>
               </div>
             )}
-            {userDetails.type === 'alumni' && (
-              <div className='mt-3 mb-1'>
-                <p className=''>Current Address</p>
-                <p className='font-bold text-xl'>
-                  {userDetails.otherInfo.address
-                    ? userDetails.otherInfo.address
-                    : 'Not provided'}
-                </p>
-              </div>
-            )}
             {userDetails.type === 'admin' && (
-              <div className='mt-3 mb-1'>
-                <p className='text-sm'>Mobile Number</p>
+              <div className='mt-4 mb-1'>
+                <p className=''>Mobile Number</p>
                 <p className='font-bold text-xl'>{userDetails.phone}</p>
               </div>
             )}
-            <div className='flex lg:hidden justify-center'>
+            <div className='flex mt-2 lg:hidden justify-center'>
               {userDetails && (
                 <CButton1
+                  width={'100%'}
                   title={'Logout'}
                   rightIcon={<BiLogOutCircle size={18} />}
                   onClick={() => {
@@ -81,6 +75,22 @@ const LeftCard = ({ userDetails }) => {
                 />
               )}
             </div>
+            <div className='flex mt-2 lg:hidden justify-center'>
+              {userDetails && (
+                <CButton1
+                  width={'100%'}
+                  title={'Change Password'}
+                  onClick={handleChangePasswordModal}
+                  rightIcon={<RiLockPasswordFill size={18} />}
+                />
+              )}
+            </div>
+            {isChangePasswordModalOpen && (
+              <ChangePasswordModal
+                isOpen={true}
+                onClose={() => setIsChangePasswordModalOpen(false)}
+              />
+            )}
           </div>
         </div>
       </Box>

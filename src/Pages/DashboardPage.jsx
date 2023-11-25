@@ -11,6 +11,7 @@ import { BiSearchAlt } from 'react-icons/bi'
 import { FaGraduationCap, FaUserGraduate } from 'react-icons/fa6'
 import MakeRequestModal from './Components/MakeRequestModal'
 import AlumniProfileModal from './Components/AlumniProfileModal'
+import { api } from './Components/API'
 const DashboardPage = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -52,7 +53,7 @@ const DashboardPage = ({ user }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/search?name=${searchQuery}`,
+        `${api}/api/search?name=${searchQuery}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -80,8 +81,12 @@ const DashboardPage = ({ user }) => {
         >
           <div>
             <div>
-              <p className='text-center text-3xl font-bold py-10'>
+              <p className='text-center text-3xl font-bold py-1'>
                 Welcome <span className='text-primary'>{user.name}</span>
+              </p>
+              <p className='text-center text-2xl font-bold py-1'>
+                Department of{' '}
+                <span className='capitalize'>{user.department}</span>
               </p>
             </div>
             <div className='flex justify-center'>
@@ -136,11 +141,13 @@ const DashboardPage = ({ user }) => {
                     Search Result : {searchResults.length}
                   </p>
                 )}
-                <div className='w-full lg:grid lg:grid-cols-2 place-content-center lg:justify-center px-5 lg:gap-x-5'>
+                <div className='w-full cardContainer place-content-center lg:justify-center px-5 lg:gap-x-5'>
                   {searchResults &&
                     searchResults.map((alumni, index) => (
-                      <div key={index} className='my-3'>
+                      <div key={index} className='my-3 profileCard'>
                         <AlumniCard
+                          user={user}
+                          alumniId={alumni._id}
                           name={alumni.name}
                           gender={alumni.gender}
                           degree={alumni.parmanentCourses[0].degree}
@@ -185,10 +192,19 @@ const DashboardPage = ({ user }) => {
   )
 }
 
-const AlumniCard = ({ name, gender, degree, department, batch, click }) => {
+const AlumniCard = ({
+  user,
+  alumniId,
+  name,
+  gender,
+  degree,
+  department,
+  batch,
+  click,
+}) => {
   return (
     <>
-      <div className=' w-[90%] min-h-[150px] bg-slate-200 dark:bg-slate-900 rounded-lg max-md:mb-3 p-4'>
+      <div className='min-h-[150px] bg-slate-200 dark:bg-slate-900 rounded-lg max-md:mb-3 p-4'>
         <div className='w-[100%] flex pr-4 justify-center'>
           <img
             src={gender === 'male' ? Male : Female}
@@ -199,14 +215,21 @@ const AlumniCard = ({ name, gender, degree, department, batch, click }) => {
         <div className='w-[100%] flex lg:px-8 justify-between'>
           <div className='w-[100%]'>
             <div className='w-full'>
-              <p className='font-bold text-center text-2xl'>{name}</p>
+              <p className='font-bold text-center text-2xl'>
+                {name}{' '}
+                {alumniId === user._id && (
+                  <span className='text-xs bg-green-400 border-green-400 rounded-sm px-[5px] py-[1px]'>
+                    You
+                  </span>
+                )}
+              </p>
               <div className='flex justify-center'>
                 {degree && department && (
                   <div className='flex justify-center'>
                     <div className='flex font-bold py-1 items-start'>
                       <FaGraduationCap size={20} className='mt-1' />
                       <p className='text-sm text-center pt-1 pl-1'>
-                        {degree} in {department}
+                        {degree} in <br /> {department}
                       </p>
                     </div>
                   </div>

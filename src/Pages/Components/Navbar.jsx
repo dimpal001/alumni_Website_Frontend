@@ -1,29 +1,35 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import {
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react'
 import { CButton1, brandColor } from './CustomDesign'
-import { CgMenuRightAlt } from 'react-icons/cg'
 import '../../App.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserContext } from '../../UserContext'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { BiLogOutCircle } from 'react-icons/bi'
+import { HiMenu } from 'react-icons/hi'
+import { useDrawer } from '../../DrawerContext'
+import { FaHome } from 'react-icons/fa'
+import { MdHelpOutline, MdOutlineInfo } from 'react-icons/md'
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [isdark, setIsdark] = useState(true)
   const toast = useToast()
   const { user, setUser } = useContext(UserContext)
+  const btnRef = useRef()
   const navigate = useNavigate()
+  const { openDrawer } = useDrawer()
 
-  const closeMenu = () => {
-    setMenuOpen(false)
-  }
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const toggleDarkMode = () => {
     const body = document.body
@@ -31,7 +37,6 @@ const Navbar = () => {
     const isDarkMode = body.classList.contains('dark')
     localStorage.setItem('darkMode', isDarkMode)
     setIsdark(!isDarkMode)
-    closeMenu()
   }
   useEffect(() => {
     const isDarkMode = localStorage.getItem('darkMode') === 'true'
@@ -63,6 +68,11 @@ const Navbar = () => {
         <div>
           <Link to={'/'}>
             <p className='text-xl lg:text-2xl font-bold'>GradConnect</p>
+            {user && (
+              <p className='text-[14px] max-sm:text-[12px] text-primary font-bold'>
+                Department of {user.department}
+              </p>
+            )}
           </Link>
         </div>
         <div className='flex items-center'>
@@ -86,48 +96,64 @@ const Navbar = () => {
             }
           />
           <ul className='hidden lg:flex items-center justify-around font-bold w-full'>
-            <NavItems
-              closeMenu={closeMenu}
-              onClick={handleLogout}
-              user={user}
-            />
+            <NavItems onClick={handleLogout} user={user} />
           </ul>
-          <div className='flex lg:hidden items-center'>
-            <Menu
-              isOpen={menuOpen}
-              onOpen={() => setMenuOpen(true)}
-              onClose={() => setMenuOpen(false)}
-            >
-              <MenuButton
-                borderColor={brandColor.first}
-                as={IconButton}
-                _hover={{ background: 'transparent' }}
-                borderWidth={2}
-                icon={<CgMenuRightAlt size={25} color={brandColor.first} />}
-                variant='outline'
-                onClick={() => setMenuOpen(!menuOpen)}
-              />
-              <MenuList background={brandColor.dark}>
-                <NavItems closeMenu={closeMenu} />
-              </MenuList>
-            </Menu>
+          <div className='lg:hidden'>
+            {user ? (
+              <HiMenu size={28} ref={btnRef} onClick={openDrawer} />
+            ) : (
+              <HiMenu size={28} ref={btnRef} onClick={onOpen} />
+            )}
           </div>
+          <Drawer
+            isOpen={isOpen}
+            placement='right'
+            onClose={onClose}
+            finalFocusRef={btnRef}
+          >
+            <DrawerOverlay />
+            <DrawerContent className='dark:bg-slate-900 dark:text-white'>
+              <DrawerCloseButton />
+              <DrawerHeader>GradConnect</DrawerHeader>
+
+              <DrawerBody>
+                <Link to={'/'} onClick={onClose}>
+                  <div className='flex items-center mt-2 font-bold'>
+                    <FaHome className='mr-2' />
+                    <p>Home</p>
+                  </div>
+                </Link>
+                <Link to={'/help'} onClick={onClose}>
+                  <div className='flex items-center mt-2 font-bold'>
+                    <MdHelpOutline className='mr-2' />
+                    <p>Help</p>
+                  </div>
+                </Link>
+                <Link to={'/about'} onClick={onClose}>
+                  <div className='flex items-center mt-2 font-bold'>
+                    <MdOutlineInfo className='mr-2' />
+                    <p>About</p>
+                  </div>
+                </Link>
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
     </>
   )
 }
 
-const NavItems = ({ closeMenu, onClick, user }) => {
+const NavItems = ({ onClick, user }) => {
   return (
     <ul className='pl-1 lg:pl-5 flex flex-col lg:flex-row max-md:space-y-2 items-baseline font-bold'>
-      <Link to='/' onClick={closeMenu}>
+      <Link to='/'>
         <li>Home</li>
       </Link>
-      <Link to='/help' onClick={closeMenu}>
+      <Link to='/help'>
         <li>Help</li>
       </Link>
-      <Link to='/about' onClick={closeMenu}>
+      <Link to='/about'>
         <li>About</li>
       </Link>
       {user && (

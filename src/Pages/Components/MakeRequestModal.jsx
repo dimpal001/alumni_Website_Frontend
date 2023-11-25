@@ -1,6 +1,7 @@
 import {
   Divider,
   FormControl,
+  FormLabel,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,26 +18,25 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { FaUserGraduate } from 'react-icons/fa'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
+import { api } from './API'
 
 const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
   const toast = useToast()
   const [degrees, setDegrees] = useState([])
-  const [departments, setDepartments] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     axios
-      .get('http://localhost:3000/api/content', {
+      .get(`${api}/api/departments/degrees/${user.department}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       })
       .then((response) => {
         setDegrees(response.data.degrees)
-        setDepartments(response.data.departments)
       })
       .catch((error) => {
         console.log(error)
@@ -64,7 +64,6 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
     e.preventDefault()
     const {
       registrationNumber,
-      department,
       admissionYear,
       completionYear,
       rollNumber,
@@ -76,8 +75,6 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
 
     if (
       registrationNumber === '' ||
-      department === '' ||
-      department === '' ||
       admissionYear === '' ||
       completionYear === '' ||
       rollNumber === '' ||
@@ -136,12 +133,12 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
 
     axios
       .post(
-        'http://localhost:3000/api/alumni-request',
+        `${api}/api/alumni-request`,
         {
           id: user._id,
           registrationNumber: formData.registrationNumber,
           name: user.name,
-          department: formData.department,
+          department: user.department,
           admissionYear: formData.admissionYear,
           completionYear: formData.completionYear,
           rollNumber: formData.rollNumber,
@@ -262,10 +259,17 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
   }
   return (
     <>
-      <Modal size={'2xl'} isOpen={isOpen} onClose={setOpen}>
+      <Modal
+        size={{ base: 'full', md: '2xl' }}
+        isOpen={isOpen}
+        onClose={setOpen}
+      >
         <ModalOverlay />
-        <ModalContent margin={3} className='bg-slate-50 dark:bg-slate-800'>
-          <ModalHeader className='text-slate-800 dark:text-slate-50'>
+        <ModalContent
+          margin={{ base: 0, md: 3 }}
+          className='bg-slate-50 dark:bg-slate-900'
+        >
+          <ModalHeader className='text-slate-900 dark:text-slate-50'>
             <div className='flex'>
               <FaUserGraduate className='mt-1 mr-2' />
               <p>GradConnect</p>
@@ -279,10 +283,13 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
           </ModalHeader>
           <div className='flex justify-center'></div>
           <ModalCloseButton color={brandColor.first} />
-          <ModalBody maxH={{ base: '600px', lg: '580px' }}>
+          <ModalBody maxH={{ lg: '580px' }}>
             <form>
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-x-5'>
+              <div className='grid grid-cols-1 dark:border-0 border rounded-lg lg:grid-cols-2 gap-x-5'>
                 <FormControl className='p-2' my={2}>
+                  <FormLabel>
+                    <p className='text-sm dark:text-white'>Course Type</p>
+                  </FormLabel>
                   <Select
                     borderWidth={1}
                     borderColor={brandColor.dark}
@@ -302,41 +309,24 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
                       ))}
                   </Select>
                 </FormControl>
-                <FormControl className='p-2' my={2}>
-                  {/* <FormLabel
-                    className='text-slate-800 pl-1 text-xs pb-1 dark:text-slate-50'
-                    my={1}
-                  >
-                    Departments
-                  </FormLabel> */}
-                  <Select
-                    borderWidth={1}
-                    borderColor={brandColor.dark}
-                    className='bg-slate-50 dark:bg-slate-800'
-                    name={'department'}
-                    value={formData.department}
-                    onChange={handleInputChange}
-                    fontWeight={'bold'}
-                    color={brandColor.first}
-                  >
-                    <option value=''>Select a Department</option>
-                    {departments &&
-                      departments.map((department, index) => (
-                        <option key={index} value={department.name}>
-                          {department.name}
-                        </option>
-                      ))}
-                  </Select>
-                </FormControl>
+                <LabelInput
+                  value={user.department}
+                  label={'Department'}
+                  disabled={true}
+                  name={'department'}
+                  onChange={handleInputChange}
+                />
                 <LabelInput
                   value={formData.registrationNumber}
                   label={'Registration Number'}
                   placeholder={'Enter your registration number'}
                   name={'registrationNumber'}
+                  type={'number'}
                   onChange={handleInputChange}
                 />
                 <LabelInput value={user.name} label={'Name'} disabled={true} />
                 <LabelInput
+                  type={'number'}
                   value={formData.admissionYear}
                   label={'Year of Admission'}
                   placeholder={'Enter your admission year'}
@@ -344,6 +334,7 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
                   onChange={handleInputChange}
                 />
                 <LabelInput
+                  type={'number'}
                   value={formData.completionYear}
                   label={'Year of completion'}
                   placeholder={'Enter your completion year'}
@@ -359,6 +350,7 @@ const MakeRequestModal = ({ isOpen, title, setOpen, fetchCourse }) => {
                 />
 
                 <LabelInput
+                  type={'number'}
                   value={formData.cgpa}
                   label={'CGPA'}
                   placeholder={'Enter your CGPA'}

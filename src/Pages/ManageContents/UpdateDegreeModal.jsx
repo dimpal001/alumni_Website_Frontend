@@ -14,13 +14,17 @@ import { MdCheckCircle } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { CButton1 } from '../Components/CustomDesign'
 import { AddIcon } from '@chakra-ui/icons'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import DeleteDegreeAlert from './DeleteDegreeAlert'
+import { api } from '../Components/API'
+import { UserContext } from '../../UserContext'
 
 const UpdateDegreeModal = ({ isOpen, onClose }) => {
   const toast = useToast()
   const [degrees, setDegrees] = useState([])
+
+  const { user } = useContext(UserContext)
 
   const [isDegreeAlertOpen, setIsDegreeAlertOpen] = useState(false)
   const [selectedDegree, setSelectedDegree] = useState('')
@@ -30,12 +34,13 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
 
     await axios
-      .get('http://localhost:3000/api/content', {
+      .get(`${api}/api/departments/degrees/${user.department}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       })
       .then((response) => {
+        console.log(response.data)
         setDegrees(response.data.degrees)
       })
       .catch((error) => {
@@ -46,82 +51,6 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     fetchContent()
   }, [])
-
-  // const handleAddDegree = async (e) => {
-  //   e.preventDefault()
-  //   const newDegree = e.target.elements.degree.value.trim()
-  //   if (newDegree === '') {
-  //     toast({
-  //       title: 'Invalid Degree Name !',
-  //       status: 'error',
-  //       isClosable: true,
-  //       duration: 2200,
-  //       position: 'top',
-  //     })
-  //     return
-  //   }
-
-  //   function capitalizeSentence(newDegree) {
-  //     return newDegree
-  //       .split(' ')
-  //       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-  //       .join(' ')
-  //   }
-
-  //   const degreeName = capitalizeSentence(newDegree)
-  //   if (degreeName) {
-  //     if (degrees && degrees.some((degree) => degree.name === degreeName)) {
-  //       e.target.elements.degree.value = ''
-  //       toast({
-  //         title: 'Already Exist !',
-  //         status: 'error',
-  //         isClosable: true,
-  //         duration: 2200,
-  //         position: 'top',
-  //       })
-  //       return
-  //     }
-
-  //     e.target.elements.degree.value = ''
-  //     setDegrees((prevDegrees) => {
-  //       const updatedDegrees = [...prevDegrees, { name: degreeName }]
-  //       axios
-  //         .post(
-  //           'http://localhost:3000/api/content/update-degrees',
-  //           {
-  //             degrees: updatedDegrees,
-  //           },
-  //           {
-  //             headers: {
-  //               Authorization: `Bearer ${jwtToken}`,
-  //             },
-  //           }
-  //         )
-  //         .then(() => {
-  //           toast({
-  //             title: 'One degree added.',
-  //             status: 'success',
-  //             isClosable: true,
-  //             duration: 3000,
-  //             position: 'top',
-  //           })
-  //           fetchContent()
-  //         })
-  //         .catch((error) => {
-  //           console.log(error)
-  //           toast({
-  //             title: 'Error updating degrees',
-  //             status: 'error',
-  //             isClosable: true,
-  //             duration: 3000,
-  //             position: 'top',
-  //           })
-  //         })
-  //       return updatedDegrees
-  //     })
-  //     const jwtToken = sessionStorage.getItem('jwtToken')
-  //   }
-  // }
 
   const handleAddDegree = async (e) => {
     e.preventDefault()
@@ -158,8 +87,9 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
       const jwtToken = sessionStorage.getItem('jwtToken')
 
       await axios.post(
-        'http://localhost:3000/api/content/update-degrees',
+        `${api}/api/departments/update-degrees`,
         {
+          userDepartment: user.department,
           degrees: [...degrees, { name: capitalizedDegree }],
         },
         {
@@ -201,10 +131,11 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
 
   const deleteDegree = async () => {
     console.log(selectedDegree)
+    console.log(degreeName)
     try {
       const jwtToken = sessionStorage.getItem('jwtToken')
       const response = await axios.delete(
-        `http://localhost:3000/api/content/delete-degree/${selectedDegree}`,
+        `${api}/api/departments/delete-degree/${user.department}/${selectedDegree}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -235,7 +166,11 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size={{ base: 'full', md: 'md' }}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-800 dark:text-white'>
           <ModalHeader>All Degrees</ModalHeader>
@@ -245,7 +180,7 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
               {degrees &&
                 degrees.map((degree, index) => (
                   <ListItem
-                    className='dark:hover:bg-slate-950 hover:bg-slate-300 rounded-lg my-1'
+                    className='dark:hover:bg-slate-950 text-slate-950 dark:text-white hover:bg-slate-300 rounded-lg my-1'
                     key={index}
                     onClick={() =>
                       handleOpenDegreeAlert({
@@ -270,7 +205,6 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
                   <input
                     autoComplete='off'
                     name='degree'
-                    autoFocus
                     placeholder='Enter a degree name'
                     className='w-full p-2 pl-5 rounded-lg bg-transparent border focus:outline-none'
                     type='text'
@@ -290,7 +224,6 @@ const UpdateDegreeModal = ({ isOpen, onClose }) => {
         {isDegreeAlertOpen && (
           <DeleteDegreeAlert
             isOpen={true}
-            degreeId={selectedDegree}
             name={degreeName}
             onClose={() => setIsDegreeAlertOpen(false)}
             onDeleteDegree={deleteDegree}

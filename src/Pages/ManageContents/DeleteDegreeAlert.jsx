@@ -31,7 +31,7 @@ const DeleteDegreeAlert = ({ isOpen, name, onClose, onDeleteDegree }) => {
         onClose={onClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent className='dark:bg-slate-800 dark:text-white'>
+          <AlertDialogContent className='dark:bg-slate-800 max-sm:mx-3 dark:text-white'>
             <AlertDialogBody className='mt-6'>
               <Text className='font-bold text-lg'>
                 Remove <strong className='text-primary'>{name}</strong> ?

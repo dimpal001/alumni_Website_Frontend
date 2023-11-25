@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Divider,
   Input,
   InputGroup,
@@ -16,22 +17,47 @@ import {
 import { CButton1, IconInput, brandColor } from './CustomDesign'
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi'
 import { MdLockPerson, MdMarkEmailRead, MdPhone } from 'react-icons/md'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { BiUserCircle } from 'react-icons/bi'
+import { api } from './API'
+import { UserContext } from '../../UserContext'
+import { RiCheckboxMultipleFill } from 'react-icons/ri'
 
 const SignUpModal = ({ title, open, onClose }) => {
   const toast = useToast()
+  const { user } = useContext(UserContext)
   const [isSubmited, setIsSubmited] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [departments, setDepartments] = useState([])
   const [isPassword, setIsPassword] = useState(true)
+  const [checked, setChecked] = useState(false)
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     gender: '',
+    department: '',
     password: '',
   })
+
+  const fetchDepartments = () => {
+    axios
+      .get(`${api}/api/departments`)
+      .then((response) => {
+        setDepartments(response.data.departments)
+        console.log(departments)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  useEffect(() => {
+    fetchDepartments()
+    console.log(departments)
+  }, [])
 
   const handleInputChange = (event) => {
     setFormData({
@@ -51,7 +77,7 @@ const SignUpModal = ({ title, open, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const { name, email, phone, gender, password } = formData
+    const { name, email, phone, gender, department, password } = formData
 
     if (
       name === '' ||
@@ -60,6 +86,17 @@ const SignUpModal = ({ title, open, onClose }) => {
       gender === '' ||
       password === ''
     ) {
+      toast({
+        title: 'All fields are required !',
+        status: 'error',
+        isClosable: true,
+        duration: 1800,
+        position: 'top',
+      })
+      return
+    }
+
+    if (title === 'createAdmin' && checked && department === '') {
       toast({
         title: 'All fields are required !',
         status: 'error',
@@ -111,12 +148,18 @@ const SignUpModal = ({ title, open, onClose }) => {
       setIsLoading(true)
       const response = await axios.post(
         title === 'createAdmin'
-          ? 'http://localhost:3000/api/auth/create-admin'
-          : 'http://localhost:3000/api/auth/signup',
+          ? `${api}/api/auth/create-admin`
+          : `${api}/api/auth/signup`,
         {
           name: name,
           email: email,
           phone: phone,
+          department:
+            title != 'createAdmin'
+              ? department
+              : checked
+              ? department
+              : user.department,
           gender: gender,
           password: password,
         },
@@ -130,6 +173,7 @@ const SignUpModal = ({ title, open, onClose }) => {
       console.log(response.data)
       setIsLoading(false)
     } catch (error) {
+      console.log(error)
       setIsLoading(false)
       if (
         error.response &&
@@ -158,9 +202,9 @@ const SignUpModal = ({ title, open, onClose }) => {
   }
   return (
     <>
-      <Modal isOpen={open} onClose={onClose}>
+      <Modal isOpen={open} size={{ base: 'full', md: 'md' }} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent className='dark:bg-slate-800' mx={3}>
+        <ModalContent className='dark:bg-slate-900' mx={{ md: 3 }}>
           {!isSubmited && (
             <div>
               <ModalHeader color={brandColor.first}>
@@ -177,6 +221,45 @@ const SignUpModal = ({ title, open, onClose }) => {
                   <p className='p-0 text-primary text-[15px] text-center m-0'>
                     Name should be same as the Degree record !
                   </p>
+                )}
+                {title === 'createAdmin' && (
+                  <Checkbox
+                    className='pl-1 font-bold dark:text-white'
+                    isChecked={checked}
+                    onChange={(e) => setChecked(e.target.checked)}
+                  >
+                    For New Department
+                  </Checkbox>
+                )}
+                {title === 'createAdmin' && checked && (
+                  <IconInput
+                    name={'department'}
+                    onChange={handleInputChange}
+                    icon={
+                      <RiCheckboxMultipleFill
+                        color={brandColor.first}
+                        size={22}
+                      />
+                    }
+                    placeholder={'Department name'}
+                  />
+                )}
+                {title != 'createAdmin' && (
+                  <Select
+                    name='department'
+                    className='bg-slate-200 mt-5 dark:bg-slate-900 '
+                    onChange={handleInputChange}
+                    color={brandColor.first}
+                    fontWeight={'bold'}
+                  >
+                    <option value=''>Select a Department</option>
+                    {departments &&
+                      departments.map((department, index) => (
+                        <option key={index} value={department.name}>
+                          {department.name}
+                        </option>
+                      ))}
+                  </Select>
                 )}
                 <IconInput
                   name={'name'}
@@ -198,7 +281,7 @@ const SignUpModal = ({ title, open, onClose }) => {
                 />
                 <Select
                   name='gender'
-                  className='bg-slate-200 dark:bg-slate-900 '
+                  className='bg-transparent'
                   onChange={handleInputChange}
                   color={brandColor.first}
                   fontWeight={'bold'}
@@ -208,10 +291,7 @@ const SignUpModal = ({ title, open, onClose }) => {
                   <option value='female'>Female</option>
                   <option value='other'>Other</option>
                 </Select>
-                <InputGroup
-                  className='bg-slate-200 rounded-lg dark:bg-slate-900'
-                  mt={4}
-                >
+                <InputGroup className='bg-transparent rounded-lg ' mt={4}>
                   <InputLeftElement pointerEvents={'none'}>
                     <MdLockPerson size={22} color={brandColor.first} />
                   </InputLeftElement>
@@ -258,6 +338,11 @@ const SignUpModal = ({ title, open, onClose }) => {
                       rightIcon={<BiUserCircle size={25} />}
                     />
                   </div>
+                )}
+                {checked && (
+                  <p className='text-primary font-bold max-sm:pt-10 text-center'>
+                    One new department will be added.
+                  </p>
                 )}
               </form>
             </ModalBody>

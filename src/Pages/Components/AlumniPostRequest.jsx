@@ -16,8 +16,9 @@ import {
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Loading from './Loading'
-import { CButton1 } from './CustomDesign'
+import { CButton1, brandColor } from './CustomDesign'
 import SinglPostModal from './SinglPostModal'
+import { api } from './API'
 
 const AlumniPostRequest = ({ isOpen, onClose }) => {
   const [announcements, setAnnouncements] = useState([])
@@ -31,9 +32,7 @@ const AlumniPostRequest = ({ isOpen, onClose }) => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get(
-        'http://localhost:3000/api/announcement/pending'
-      )
+      const response = await axios.get(`${api}/api/announcement/pending`)
       setAnnouncements(response.data)
       console.log(announcements)
       setLoading(false)
@@ -49,12 +48,9 @@ const AlumniPostRequest = ({ isOpen, onClose }) => {
   const handleApproveOrReject = async ({ id, status }) => {
     console.log(id)
     try {
-      await axios.put(
-        `http://localhost:3000/api/announcement/approve-reject/${id}`,
-        {
-          status: status,
-        }
-      )
+      await axios.put(`${api}/api/announcement/approve-reject/${id}`, {
+        status: status,
+      })
       fetchAnnouncements()
     } catch (error) {
       console.error('Error fetching announcements:', error.message)
@@ -70,30 +66,41 @@ const AlumniPostRequest = ({ isOpen, onClose }) => {
       >
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-900'>
-          <ModalCloseButton />
-          <ModalBody>
+          <ModalCloseButton color={brandColor.first} />
+          <ModalBody className='mt-4'>
             {isLoading ? (
               <Loading title={'Fetching data...'} />
             ) : (
-              <div className='p-2 my-3'>
+              <div className='md:p-2 my-3'>
                 <div className='flex w-full'>
                   <div className='w-full'>
                     {announcements.length === 0 && announcements ? (
-                      <p className='text-center font-bold text-xl'>
+                      <p className='text-center dark:text-white font-bold text-xl'>
                         No data to show
                       </p>
                     ) : (
-                      <div className='flex border rounded-lg w-full'>
+                      <div className='flex dark:text-white border rounded-lg w-full'>
                         <TableContainer width={'100%'}>
                           <Table variant={'simple'}>
                             <Thead>
                               <Tr>
-                                <Th>Name</Th>
-                                <Th>Title</Th>
-                                <Th>Description</Th>
-                                <Th>Requested on</Th>
-                                <Th>Attatchment</Th>
-                                <Th>Action</Th>
+                                <Th className='dark:text-white'>Name</Th>
+                                <Th className='dark:text-white '>Title</Th>
+                                <Th className='dark:text-white '>
+                                  Announcement Description
+                                </Th>
+                                <Th className='dark:text-white '>
+                                  Requested on
+                                </Th>
+                                <Th className='dark:text-white '>
+                                  Attatchment
+                                </Th>
+                                <Th
+                                  textAlign={'center'}
+                                  className='dark:text-white '
+                                >
+                                  Action
+                                </Th>
                               </Tr>
                             </Thead>
                             <Tbody>
@@ -106,7 +113,13 @@ const AlumniPostRequest = ({ isOpen, onClose }) => {
                                     <Td className='text-sm'>
                                       {announcement.title}
                                     </Td>
-                                    <Td className='text-sm'>
+                                    <Td
+                                      style={{
+                                        whiteSpace: 'normal',
+                                        wordWrap: 'break-word',
+                                      }}
+                                      className='text-sm'
+                                    >
                                       {announcement.description}
                                     </Td>
                                     <Td className='text-sm'>

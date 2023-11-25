@@ -13,6 +13,7 @@ import {
 import { MdOutlineCloudUpload } from 'react-icons/md'
 import * as XLSX from 'xlsx'
 import { CButton1 } from './Components/CustomDesign'
+import { api } from './Components/API'
 
 const UploadAlumniData = ({ isOpen, onClose }) => {
   const [data, setData] = useState([])
@@ -79,7 +80,7 @@ const UploadAlumniData = ({ isOpen, onClose }) => {
 
     setIsLoading(true)
     axios
-      .post('http://localhost:3000/api/alumniData/upload-excel', {
+      .post(`${api}/api/alumniData/upload-excel`, {
         jsonData: data,
       })
       .then(() => {
@@ -108,7 +109,11 @@ const UploadAlumniData = ({ isOpen, onClose }) => {
 
   return (
     <div>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size={{ base: 'full', md: 'md' }}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent className='dark:bg-slate-900 dark:text-white'>
           <ModalHeader>Upload Alumni Data</ModalHeader>
@@ -140,7 +145,8 @@ const UploadAlumniData = ({ isOpen, onClose }) => {
 
           <ModalFooter>
             <CButton1
-              title={'Upload'}
+              width={{ base: '100%' }}
+              title={'Submit to Upload'}
               onClick={handleUpload}
               isLoading={isLoading}
               loadingText='Uploading...'

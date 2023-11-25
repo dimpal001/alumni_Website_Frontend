@@ -124,7 +124,7 @@ export const IconInput = ({
   autoFocus,
 }) => {
   return (
-    <InputGroup className='bg-slate-200 rounded-lg dark:bg-slate-900' my={4}>
+    <InputGroup className='bg-transparent rounded-lg ' my={4}>
       <InputLeftElement pointerEvents='none'>{icon}</InputLeftElement>
       <Input
         width={width}
@@ -183,7 +183,7 @@ export const LabelInput = ({
   disabled,
 }) => {
   return (
-    <FormControl className='p-2 ' my={2}>
+    <FormControl className='p-2 ' my={{ base: 0, md: 2 }}>
       <p className='text-sm py-1  dark:text-slate-50'>{label}</p>
       <input
         type={type}

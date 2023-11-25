@@ -1,11 +1,8 @@
 :root {
     --first: #6c63ff;
     --second: #3d33ff;
-    
-}
-
-* {
-    font-family: Arial, Helvetica, sans-serif;
+    --bs-font-sans-serif: "Plus Jakarta Sans";
+    --bs-body-font-family: var(--bs-font-sans-serif);
 }
 
 ul li{
@@ -24,3 +21,39 @@ ul li:hover{
         color: white;
     }
 }
+
+.cardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+.profileCard {
+    width: calc(33.33% - 10px);
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 767px) {
+    .profileCard {
+      width: 100%;
+    }
+  }
+  .alumniListcardContainner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+.alumniCard {
+    width: calc(49% - 10px);
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 767px) {
+    .alumniCard {
+      width: 100%;
+    }
+  }
+  

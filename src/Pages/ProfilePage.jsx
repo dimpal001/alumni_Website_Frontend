@@ -17,17 +17,19 @@ import LeftCard from './Courses/LeftCard'
 import RightCard from './Courses/RightCard'
 import CourseCard from './Courses/CourseCard'
 import ManageContent from './ManageContents/ManageContent'
+import { api } from './Components/API'
+import WorkingExprCard from './Courses/WorkingExprCard'
+import UpdateWorkingExprModal from './Courses/UpdateWorkingExprModal'
 const ProfilePage = ({ userDeials }) => {
   const navigate = useToast()
   const { user, setUser } = useContext(UserContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isWorkingExprModalOpen, setIsWorkingExprModalOpen] = useState(false)
 
-  const [currentJob, setCurrentJob] = useState(
-    user.type === 'alumni' ? user.otherInfo.worksAt : ''
-  )
-  const [jobPosition, setJobPosition] = useState(
-    user.type === 'alumni' ? user.otherInfo.positionAtWork : ''
-  )
+  const handleWorkingExprModal = () => {
+    setIsWorkingExprModalOpen(true)
+  }
+
   const [personalWebsite, setPersonalWebsite] = useState(
     user.type === 'alumni' ? user.otherInfo.website : ''
   )
@@ -46,10 +48,8 @@ const ProfilePage = ({ userDeials }) => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     try {
       const response = await axios.put(
-        'http://localhost:3000/api/update-profile',
+        `${api}/api/update-profile`,
         {
-          worksAt: currentJob,
-          positionAtWork: jobPosition,
           website: personalWebsite,
           gitHubLink: githubLink,
           linkedInLink: linkedInLink,
@@ -99,6 +99,49 @@ const ProfilePage = ({ userDeials }) => {
     }
   }
 
+  const handleWorkingExprSubmit = (workingExprDetails) => {
+    console.log('Working Experience Details:', workingExprDetails)
+    const jwtToken = sessionStorage.getItem('jwtToken')
+    axios
+      .post(
+        `${api}/api/auth/add-working-experience/${user._id}`,
+        {
+          from: workingExprDetails.from,
+          to: workingExprDetails.to,
+          position: workingExprDetails.position,
+          companyName: workingExprDetails.companyName,
+          place: workingExprDetails.place,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        toast({
+          title: 'The details has been added.',
+          status: 'success',
+          isClosable: true,
+          duration: 1800,
+          position: 'top',
+        })
+        setUser(response.data.user)
+        sessionStorage.setItem('user', JSON.stringify(response.data.user))
+        setIsWorkingExprModalOpen(false)
+      })
+      .catch((error) => {
+        console.log(error)
+        toast({
+          title: 'Update failed !',
+          status: 'error',
+          isClosable: true,
+          duration: 1800,
+          position: 'top',
+        })
+      })
+  }
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -117,28 +160,22 @@ const ProfilePage = ({ userDeials }) => {
             <RightCard onClick={() => onOpen()} user={userDeials} />
           )}
           {user.type === 'admin' && <ManageContent user={userDeials} />}
+          {user.type === 'alumni' && (
+            <WorkingExprCard
+              userDetails={userDeials}
+              onClick={handleWorkingExprModal}
+            />
+          )}
+          {user.type === 'alumni' && <CourseCard />}
         </div>
-        {user.type === 'alumni' && <CourseCard />}
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay overflow={'scroll'} />
-          <ModalContent className='dark:bg-slate-900 min-h-[600px] mx-3'>
+          <ModalContent className='dark:bg-slate-900 mx-3'>
             <ModalHeader className='text-slate-950 dark:text-white'>
-              Update details
+              Update Personal Details
             </ModalHeader>
             <ModalCloseButton color={brandColor.first} />
             <ModalBody overflowY={'scroll'}>
-              <LabelInput
-                label={'Current job'}
-                placeholder={'Enter job/company name'}
-                value={currentJob}
-                onChange={(e) => setCurrentJob(e.target.value)}
-              />
-              <LabelInput
-                label={'Job position'}
-                placeholder={'Enter position of the job'}
-                value={jobPosition}
-                onChange={(e) => setJobPosition(e.target.value)}
-              />
               <LabelInput
                 label={'Personal website'}
                 placeholder={'Enter your personal website'}
@@ -163,19 +200,28 @@ const ProfilePage = ({ userDeials }) => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
               />
-              <Button
-                background={brandColor.first}
-                _hover={brandColor.second}
-                color={'white'}
-                w={'100%'}
-                mb={4}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
+              <div className='px-2 mt-3'>
+                <Button
+                  background={brandColor.first}
+                  _hover={brandColor.second}
+                  color={'white'}
+                  w={'100%'}
+                  mb={4}
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
             </ModalBody>
           </ModalContent>
         </Modal>
+        {isWorkingExprModalOpen && (
+          <UpdateWorkingExprModal
+            isOpen={true}
+            onClose={() => setIsWorkingExprModalOpen(false)}
+            onSubmit={handleWorkingExprSubmit}
+          />
+        )}
       </div>
     </>
   )

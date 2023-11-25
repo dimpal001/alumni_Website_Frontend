@@ -4,6 +4,7 @@ import { IoMdAddCircle } from 'react-icons/io'
 import { useEffect, useState } from 'react'
 import MakeRequestModal from '../Components/MakeRequestModal'
 import axios from 'axios'
+import { api } from '../Components/API'
 
 const CourseCard = () => {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false)
@@ -16,7 +17,7 @@ const CourseCard = () => {
   const fetchCourses = async () => {
     const jwtToken = sessionStorage.getItem('jwtToken')
     await axios
-      .get('http://localhost:3000/api/auth/courses', {
+      .get(`${api}/api/auth/courses`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -39,20 +40,13 @@ const CourseCard = () => {
 
   return (
     <>
-      <Box className='dark:bg-slate-900 bg-slate-200 mt-3' borderRadius={'2xl'}>
-        <div className='p-3 m-1'>
-          <p className='text-center text-2xl py-3 font-bold'>Courses</p>
-          <div className='flex justify-center'>
-            <CButton1
-              onClick={handleModalOpen}
-              leftIcon={<IoMdAddCircle size={20} />}
-              title={'Add more degree'}
-            />
-          </div>
-          <div className='grid grid-cols-1 lg:grid-cols-2'>
+      <Box className='dark:bg-slate-900 bg-slate-200' borderRadius={'2xl'}>
+        <div className='p-5'>
+          <p className='text-center text-2xl pb-1 font-bold'>Courses</p>
+          <div>
             {courses.map((course, index) => (
               <div key={index} className='lg:px-5'>
-                <Box className=' rounded-lg my-5 bg-slate-50 dark:bg-slate-800 px-3 py-3'>
+                <Box className=' rounded-lg my-1 bg-slate-50 dark:bg-slate-800 px-3 py-3'>
                   <div className='grid grid-cols-2 gap-y-2 text-[1px] lg:text-base font-bold'>
                     <p className='text-[13px]'>Registration Number</p>
                     <p className='text-primary text-[13px]'>
@@ -82,6 +76,14 @@ const CourseCard = () => {
                 </Box>
               </div>
             ))}
+          </div>
+          <div className='flex my-5 justify-center'>
+            <CButton1
+              width={'100%'}
+              onClick={handleModalOpen}
+              rightIcon={<IoMdAddCircle size={20} />}
+              title={'Add more degree'}
+            />
           </div>
         </div>
       </Box>
