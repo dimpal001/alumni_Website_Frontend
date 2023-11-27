@@ -45,7 +45,7 @@ const CourseCard = () => {
           <p className='text-center text-2xl pb-1 font-bold'>Courses</p>
           <div>
             {courses.map((course, index) => (
-              <div key={index} className='lg:px-5'>
+              <div key={index} className=''>
                 <Box className=' rounded-lg my-1 bg-slate-50 dark:bg-slate-800 px-3 py-3'>
                   <div className='grid grid-cols-2 gap-y-2 text-[1px] lg:text-base font-bold'>
                     <p className='text-[13px]'>Registration Number</p>

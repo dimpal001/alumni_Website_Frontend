@@ -226,6 +226,39 @@ const AlumniProfileModal = ({ isOpen, onClose, alumniId, fetchData }) => {
                           </div>
                         ))}
                     </div>
+                    <div>
+                      {alumni.workingExperience &&
+                        alumni.workingExperience.map((work, index) => (
+                          <div key={index}>
+                            <div className='rounded-lg p-5 lg:grid grid-cols-2 my-5 bg-slate-300 dark:bg-slate-800 w-full'>
+                              {user.type === 'admin' && (
+                                <InfoCard2
+                                  title={'Company Name'}
+                                  info={work.companyName}
+                                />
+                              )}
+                              <InfoCard2
+                                title={'Company Location'}
+                                info={work.place}
+                              />
+                              <InfoCard2
+                                title={'Position at Work'}
+                                info={work.position}
+                              />
+                              <InfoCard2
+                                title={'Working From'}
+                                info={work.from}
+                              />
+                              {user.type === 'admin' && (
+                                <InfoCard2
+                                  title={'Working To'}
+                                  info={work.to}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                     {user.type === 'admin' && (
                       <div className='mb-5'>
                         <Button

@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -43,6 +44,42 @@ const WorkingExprCard = ({ userDetails, onClick }) => {
           companyName: selectedCard.companyName,
           place: selectedCard.place,
         },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        toast({
+          title: 'The details has been added.',
+          status: 'success',
+          isClosable: true,
+          duration: 1800,
+          position: 'top',
+        })
+        setUser(response.data.user)
+        sessionStorage.setItem('user', JSON.stringify(response.data.user))
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error)
+        toast({
+          title: 'Update failed !',
+          status: 'error',
+          isClosable: true,
+          duration: 1800,
+          position: 'top',
+        })
+      })
+  }
+
+  const handleDelete = () => {
+    console.log(selectedCard)
+    const jwtToken = sessionStorage.getItem('jwtToken')
+    axios
+      .delete(
+        `${api}/api/auth/update-working-experience/${user._id}/${selectedCard._id}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -140,6 +177,11 @@ const WorkingExprCard = ({ userDetails, onClick }) => {
                 value={selectedCard.place && selectedCard.place}
                 onChange={handleFieldChange}
               />
+              <div className='px-2 my-5'>
+                <Button width={'100%'} colorScheme='red' onClick={handleDelete}>
+                  Delete
+                </Button>
+              </div>
               <div className='px-2 my-5'>
                 <CButton1
                   width={'100%'}

@@ -1,13 +1,18 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { Checkbox, useToast } from '@chakra-ui/react'
 import { CButton1, LabelInput } from './CustomDesign'
 import axios from 'axios'
+import { UserContext } from '../../UserContext'
+import { api } from './API'
+import { useNavigate } from 'react-router-dom'
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+  const { user, setUser } = useContext(UserContext)
 
   const toast = useToast()
 
@@ -25,29 +30,42 @@ const ChangePassword = () => {
         return
       }
 
+      const jwtToken = sessionStorage.getItem('jwtToken')
+
       await axios
-        .post('/api/change-password', {
-          currentPassword,
-          newPassword,
-        })
+        .put(
+          `${api}/api/change-password`,
+          {
+            oldPass: currentPassword,
+            newPass: newPassword,
+            _id: user._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        )
         .then((response) => {
           console.log(response.data)
-          toast({
-            title: 'Password changed',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-            position: 'top',
-          })
 
-          setCurrentPassword('')
-          setNewPassword('')
-          setConfirmNewPassword('')
+          setUser(null)
+          sessionStorage.removeItem('jwtToken')
+          sessionStorage.removeItem('user')
+          navigate('/')
+          toast({
+            title: `Password changed`,
+            description: 'Please login !',
+            status: 'success',
+            duration: 1800,
+            position: 'top',
+            isClosable: true,
+          })
         })
         .catch((error) => {
           console.log(error)
           toast({
-            title: 'Failed changing password',
+            title: `${error.response.data.message}`,
             status: 'error',
             duration: 3000,
             isClosable: true,
@@ -67,7 +85,7 @@ const ChangePassword = () => {
 
   return (
     <>
-      <div className='bg-white lg:min-h-[500px] dark:bg-slate-900 p-5 max-sm:p-1 lg:rounded-lg'>
+      <div className='bg-white lg:min-h-[500px] dark:bg-slate-800 p-5 max-sm:p-1 lg:rounded-lg'>
         <p className='text-center max-md:hidden font-bold text-3xl pb-3'>
           Change Password
         </p>

@@ -9,13 +9,6 @@ import { api } from './API'
 import { brandColor } from './CustomDesign'
 
 const SinglPostModal = ({ isOpen, onClose, announcement }) => {
-  // const formattedDate = new Date(
-  //   announcement.uploadDateTime
-  // ).toLocaleDateString('en-US', {
-  //   day: 'numeric',
-  //   month: 'short',
-  //   year: 'numeric',
-  // })
   return (
     <>
       <Modal size={'full'} isOpen={isOpen} onClose={onClose}>
