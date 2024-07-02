@@ -89,12 +89,12 @@ const HomePage = () => {
           <div>
             <div className='pb-10'>
               <div className='flex justify-center'>
-                <img
+                {/* <img
                   data-aos='zoom-in'
                   src={Logo}
                   alt=''
                   className='w-[150px]'
-                />
+                /> */}
               </div>
               <p
                 data-aos='fade-up'
