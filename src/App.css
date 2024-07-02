@@ -1,0 +1,6 @@
+:root {
+    --first: #6c63ff;
+    --second: #3d33ff;
+    --bs-font-sans-serif: "Plus Jakarta Sans";
+    --bs-body-font-family: var(--bs-font-sans-serif);
+}
